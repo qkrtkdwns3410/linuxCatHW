@@ -1,8 +1,6 @@
 package linux;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.StringTokenizer;
 
 /**
@@ -19,8 +17,11 @@ import java.util.StringTokenizer;
 public class LinuxHw {
     
     public static void main(String[] args) throws IOException {
+        InputStream is = openConsoleInputStream();
+    }
     
-    
+    private static InputStream openConsoleInputStream() {
+        return new ByteArrayInputStream()
     }
     
     static class FastReader {
