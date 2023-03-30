@@ -1,7 +1,8 @@
 package linux;
 
-import java.io.*;
-import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * packageName    : linux
@@ -17,48 +18,21 @@ import java.util.StringTokenizer;
 public class LinuxHw {
     
     public static void main(String[] args) throws IOException {
-        InputStream is = openConsoleInputStream();
+        InputStream is = openConsoleInputStream(); // Inputstream 선언
+        OutputStream os = System.out;
+        byte[] bytes = new byte[4]; // 4바이트단위로 각각 받도록 하겠습니다.
+        while (true) {
+            int len = is.read(bytes);
+            if (len == -1) {
+                break;
+            }
+            os.write(bytes, 0, len);
+        }
+        
     }
     
     private static InputStream openConsoleInputStream() {
-        return new ByteArrayInputStream()
+        return System.in;
     }
     
-    static class FastReader {
-        BufferedReader br;
-        StringTokenizer st;
-        
-        public FastReader() {
-            br = new BufferedReader(new InputStreamReader(System.in));
-        }
-        
-        String next() {
-            while (st == null || !st.hasMoreElements()) {
-                try {
-                    st = new StringTokenizer(br.readLine());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return st.nextToken();
-        }
-        
-        int nextInt() {
-            return Integer.parseInt(next());
-        }
-        
-        long nextLong() {
-            return Long.parseLong(next());
-        }
-        
-        String nextLine() {
-            String str = "";
-            try {
-                str = br.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return str;
-        }
-    }
 }
