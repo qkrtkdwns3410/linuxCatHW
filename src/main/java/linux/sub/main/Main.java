@@ -46,11 +46,10 @@ public class Main {
     }
     
     public static void findFile(String filePath) throws IOException {
-        try {
-            Path path = Paths.get(filePath);
-            Stream<String> fileContents = Files.lines(path);
+        Path path = Paths.get(filePath);
+        //  try-with-resource 구문사용 Stream 메모리 누수방지
+        try (Stream<String> fileContents = Files.lines(path)){
             fileContents.forEach(System.out::println);
-            fileContents.close();
         } catch (NoSuchFileException nsfe) {
             System.out.println("");
         }
