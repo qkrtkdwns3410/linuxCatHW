@@ -1,4 +1,4 @@
-package linux;
+package linux.sub.sub1;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +15,7 @@ import java.io.OutputStream;
  * -----------------------------------------------------------
  * 2023-03-30        ipeac       최초 생성
  */
-public class LinuxHw {
+public class Main {
     
     public static void main(String[] args) throws IOException {
         InputStream is = openConsoleInputStream(); // Inputstream 선언
