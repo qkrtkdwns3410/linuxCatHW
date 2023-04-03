@@ -129,7 +129,8 @@ public class Main {
      * @param filePathTo   최종 이동시킬 파일의 경로 (파일이름 포함)
      **/
     public static void moveFile(String filePathFrom, String filePathTo) throws IOException {
-        copyFile(filePathFrom, filePathTo);
+        if (checkFilePathDup(filePathFrom, filePathTo)) return;
+        createFileInputOutputStream(filePathFrom, filePathTo);
         removeFilePathFrom(filePathFrom); //남아있는 파일을 삭제합니다.
     }
     
