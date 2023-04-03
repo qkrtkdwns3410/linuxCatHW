@@ -59,10 +59,6 @@ public class Main {
                             }
                             String fromForCP = st.nextToken();
                             String toForCP = st.nextToken();
-                            if (fromForCP.equals(toForCP)) {
-                                System.out.println("경로가 동일합니다");
-                                continue;
-                            }
                             copyFile(fromForCP, toForCP);
                         } catch (NoSuchFileException e) {
                             System.out.println("해당 파일이 없습니다.");
@@ -101,6 +97,7 @@ public class Main {
                     
                     default:
                         break;
+                    
                 }
             } catch (NoSuchElementException e) {
                 System.out.println();
@@ -184,6 +181,12 @@ public class Main {
         }
     }
     
+    /**
+     * 파일이 복사되는 경로가 동일한지 체크합니다.
+     * @param filePathFrom
+     * @param filePathTo
+     * @return
+     */
     private static boolean checkFilePathDup(String filePathFrom, String filePathTo) {
         if (filePathFrom.equals(filePathTo)) {
             System.out.println("파일 경로가 동일합니다");
