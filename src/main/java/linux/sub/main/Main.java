@@ -42,80 +42,64 @@ public class Main {
                     System.out.println("command not found: " + function);
                     continue;
                 }
-                switch (command) {
-                    case CAT:
-                        List<String> filePaths = new ArrayList<>();
-                        while (st.hasMoreTokens()) { // delim 값 을 만나면 포인터를 delim 이후까지 설정합니다. delim 값없이 개행되는경우
-                            // 포인터의 위치가 문장의 최대 길이 이상으로 잡히기 때문에
-                            // 그때부터는 false 반환하여 다음 단어가 없음을 알려주게됩니다.
-                            filePaths.add(st.nextToken());
-                        }
-                        findFile(filePaths);
-                        break;
-                    case CP:
-                        try {
+                try {
+                    switch (command) {
+                        case CAT:
+                            List<String> filePaths = new ArrayList<>();
+                            while (st.hasMoreTokens()) { // delim 값 을 만나면 포인터를 delim 이후까지 설정합니다. delim 값없이 개행되는경우
+                                // 포인터의 위치가 문장의 최대 길이 이상으로 잡히기 때문에
+                                // 그때부터는 false 반환하여 다음 단어가 없음을 알려주게됩니다.
+                                filePaths.add(st.nextToken());
+                            }
+                            findFile(filePaths);
+                            break;
+                        case CP:
                             if (st.countTokens() != 2) {
                                 throw new ParameterInaccurateException();
                             }
                             String fromForCP = st.nextToken();
                             String toForCP = st.nextToken();
-                            if (fromForCP.equals(toForCP)) {
-                                System.out.println("경로가 동일합니다");
-                                continue;
-                            }
                             copyFile(fromForCP, toForCP);
-                        } catch (NoSuchFileException e) {
-                            System.out.println("해당 파일이 없습니다.");
-                        } catch (NoSuchElementException nsee) {
-                            System.out.println("올바른 경로 매개변수가 아닙니다.");
-                        } catch (FileNotFoundException fnfe) {
-                            System.out.println("해당 파일을 찾을 수 없습니다.");
-                        } catch (ParameterInaccurateException e) {
-                            System.out.println("파라미터 개수가 올바르지 않습니다.");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                            
+                            break;
                         
-                        break;
-                    
-                    case MV:
-                        try {
+                        case MV:
                             if (st.countTokens() != 2) {
                                 throw new ParameterInaccurateException();
                             }
                             String fromForMV = st.nextToken();
                             String toForMV = st.nextToken();
                             moveFile(fromForMV, toForMV);
-                        } catch (NoSuchFileException e) {
-                            System.out.println("해당 파일이 없습니다.");
-                        } catch (NoSuchElementException nsee) {
-                            System.out.println("올바른 경로 매개변수가 아닙니다.");
-                        } catch (FileNotFoundException fnfe) {
-                            System.out.println("해당 파일을 찾을 수 없습니다.");
-                        } catch (ParameterInaccurateException e) {
-                            System.out.println("파라미터 개수가 올바르지 않습니다..");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    
-                    default:
-                        break;
+                            
+                            break;
+                        
+                        default:
+                            break;
+                        
+                    }
+                } catch (NoSuchFileException | FileNotFoundException e) {
+                    System.out.println();
+                } catch (NoSuchElementException nsee) {
+                    System.out.println("올바른 경로 매개변수가 아닙니다.");
+                } catch (ParameterInaccurateException e) {
+                    System.out.println("파라미터 개수가 올바르지 않습니다..");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } catch (NoSuchElementException e) {
                 System.out.println();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            
         }
-        
     }
     
     /**
      * List<String> to List<Path>
      *
-     * @param filePaths
-     * @return
+     * @param filePaths String 클래스 리스트
+     * @return List<Path>  Path 클래스 리스트
      */
     public static List<Path> convertStringToPath(List<String> filePaths) {
         List<Path> paths = new ArrayList<>();
@@ -143,7 +127,8 @@ public class Main {
      * @param filePathTo   최종 이동시킬 파일의 경로 (파일이름 포함)
      **/
     public static void moveFile(String filePathFrom, String filePathTo) throws IOException {
-        copyFile(filePathFrom, filePathTo);
+        if (checkFilePathDup(filePathFrom, filePathTo)) return;
+        createFileInputOutputStream(filePathFrom, filePathTo);
         removeFilePathFrom(filePathFrom); //남아있는 파일을 삭제합니다.
     }
     
@@ -170,8 +155,8 @@ public class Main {
      * @throws IOException
      */
     private static void createFileInputOutputStream(String filePathFrom, String filePathTo) throws IOException {
-        try (InputStream is = openFileInputStream(filePathFrom); OutputStream os = new FileOutputStream(filePathTo)) {
-            byte[] bytes = new byte[1024];
+        try (InputStream is = openBufferedFileInputStream(filePathFrom); OutputStream os = openBufferedFileOutputStream(filePathTo)) {
+            byte[] bytes = new byte[1024 * 1024]; // 일시적으로 1M을  버퍼에 저장하고, 요청시마다 일정량씩 버퍼에서 가져와 전달
             while (true) {
                 int len = is.read(bytes);
                 if (len == -1) {
@@ -179,11 +164,20 @@ public class Main {
                 }
                 os.write(bytes, 0, len);
             }
+            os.flush();
+            
         } catch (NoSuchFileException nsfe) {
             System.out.println();
         }
     }
     
+    /**
+     * 파일이 복사되는 경로가 동일한지 체크합니다.
+     *
+     * @param filePathFrom 파일 소스
+     * @param filePathTo   파일 목적지
+     * @return boolean
+     */
     private static boolean checkFilePathDup(String filePathFrom, String filePathTo) {
         if (filePathFrom.equals(filePathTo)) {
             System.out.println("파일 경로가 동일합니다");
@@ -201,7 +195,7 @@ public class Main {
      */
     public static void findFile(List<String> filePath) throws IOException {
         List<Path> paths = convertStringToPath(filePath);
-        List<String> contents = readFiles(paths);
+        List<String> contents = readAndWriteFiles(paths);
         printContents(contents);
     }
     
@@ -211,19 +205,31 @@ public class Main {
      * @param paths 받은 파일의 경로 리스트
      * @return List<String> 파일을 String 으로 변환
      */
-    private static List<String> readFiles(List<Path> paths) throws IOException {
+    private static List<String> readAndWriteFiles(List<Path> paths) throws IOException {
         List<String> fileContents = new ArrayList<>();
         for (Path path : paths) {
-            try (InputStream is = openFileInputStream(path.toString()); ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-                byte[] bytes = new byte[1024];
+            try (InputStream is = openBufferedFileInputStream(path.toString());ByteArrayOutputStream bos =new ByteArrayOutputStream(); BufferedOutputStream os =  openBufferedByteArrayOutputStream(bos)) {
+                byte[] bytes = new byte[1024 * 1024];
                 while (true) {
                     int len = is.read(bytes);
                     if (len == -1) {
                         break;
                     }
                     os.write(bytes, 0, len);
+                    
                 }
-                fileContents.add(os.toString(StandardCharsets.UTF_8));
+                os.flush();
+                
+                // buffer 내의 데이터를 모두 출력합니다. => 버퍼링된 데이터를 출력 스트림으로 반환합니다.
+                // BufferedOutputStream 을 사용하면 내부적으로 출력 스트림에 쓰여질 데이터를 미리 버퍼링하기 때문에
+                // 데이터의 양이 적은 경우에는 버퍼에 계속 저장되어있습니다.
+                
+                //그러므로 flush 를 호출함으로서 버퍼링된 데이터를 완벽하게 출력하고 기존에 남아있는 데이터를 모두 출력스트림으로 내보내어
+                //다음 동작을 할때 전 동작에서 남은 데이터에 영향을 받지 않고
+                // 메모리상으로 관리가 유리할 수 있도록 사용합니다.
+                fileContents.add(bos.toString(StandardCharsets.UTF_8));
+                // UTF-8 변환을 위해 ByteArrayOutputStream을 미리 선언후
+                //bufferd output에 매개변수로 담아 스트림을 엽니다.
             } catch (IOException nsfe) {
                 System.out.println();
             }
@@ -249,6 +255,35 @@ public class Main {
      */
     public static InputStream openFileInputStream(String filename) throws FileNotFoundException {
         return new FileInputStream(filename);
+    }
+    
+    /**
+     * 해당 파일에 대한 BufferedInputStream을 열어줍니다.
+     * @param filename 파일이름
+     * @return
+     * @throws FileNotFoundException
+     */
+    public static InputStream openBufferedFileInputStream(String filename) throws FileNotFoundException {
+        return new BufferedInputStream(new FileInputStream(filename));
+    }
+    
+    /**
+     * 해당 파일에 대한 BufferdOutputStream을 열어줍니다.
+     * @param filename 파일 이름
+     * @return
+     * @throws FileNotFoundException
+     */
+    public static OutputStream openBufferedFileOutputStream(String filename) throws FileNotFoundException {
+        return new BufferedOutputStream(new FileOutputStream(filename));
+    }
+    
+    /**
+     * 콘솔에 데이터를 쓰기위한 전초 작업으로 데이터출력 스트림을 열어줍니다.
+     * @param bos
+     * @return
+     */
+    public static BufferedOutputStream openBufferedByteArrayOutputStream(ByteArrayOutputStream bos) {
+        return new BufferedOutputStream(bos);
     }
     
 }
