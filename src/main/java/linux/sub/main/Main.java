@@ -42,77 +42,66 @@ public class Main {
                     System.out.println("command not found: " + function);
                     continue;
                 }
-                switch (command) {
-                    case CAT:
-                        List<String> filePaths = new ArrayList<>();
-                        while (st.hasMoreTokens()) { // delim 값 을 만나면 포인터를 delim 이후까지 설정합니다. delim 값없이 개행되는경우
-                            // 포인터의 위치가 문장의 최대 길이 이상으로 잡히기 때문에
-                            // 그때부터는 false 반환하여 다음 단어가 없음을 알려주게됩니다.
-                            filePaths.add(st.nextToken());
-                        }
-                        findFile(filePaths);
-                        break;
-                    case CP:
-                        try {
+                try {
+                    switch (command) {
+                        case CAT:
+                            List<String> filePaths = new ArrayList<>();
+                            while (st.hasMoreTokens()) { // delim 값 을 만나면 포인터를 delim 이후까지 설정합니다. delim 값없이 개행되는경우
+                                // 포인터의 위치가 문장의 최대 길이 이상으로 잡히기 때문에
+                                // 그때부터는 false 반환하여 다음 단어가 없음을 알려주게됩니다.
+                                filePaths.add(st.nextToken());
+                            }
+                            findFile(filePaths);
+                            break;
+                        case CP:
                             if (st.countTokens() != 2) {
                                 throw new ParameterInaccurateException();
                             }
                             String fromForCP = st.nextToken();
                             String toForCP = st.nextToken();
                             copyFile(fromForCP, toForCP);
-                        } catch (NoSuchFileException e) {
-                            System.out.println("해당 파일이 없습니다.");
-                        } catch (NoSuchElementException nsee) {
-                            System.out.println("올바른 경로 매개변수가 아닙니다.");
-                        } catch (FileNotFoundException fnfe) {
-                            System.out.println("해당 파일을 찾을 수 없습니다.");
-                        } catch (ParameterInaccurateException e) {
-                            System.out.println("파라미터 개수가 올바르지 않습니다.");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                            
+                            break;
                         
-                        break;
-                    
-                    case MV:
-                        try {
+                        case MV:
                             if (st.countTokens() != 2) {
                                 throw new ParameterInaccurateException();
                             }
                             String fromForMV = st.nextToken();
                             String toForMV = st.nextToken();
                             moveFile(fromForMV, toForMV);
-                        } catch (NoSuchFileException e) {
-                            System.out.println("해당 파일이 없습니다.");
-                        } catch (NoSuchElementException nsee) {
-                            System.out.println("올바른 경로 매개변수가 아닙니다.");
-                        } catch (FileNotFoundException fnfe) {
-                            System.out.println("해당 파일을 찾을 수 없습니다.");
-                        } catch (ParameterInaccurateException e) {
-                            System.out.println("파라미터 개수가 올바르지 않습니다..");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    
-                    default:
-                        break;
-                    
+                            
+                            break;
+                        
+                        default:
+                            break;
+                        
+                    }
+                } catch (NoSuchFileException e) {
+                    System.out.println("해당 파일이 없습니다.");
+                } catch (NoSuchElementException nsee) {
+                    System.out.println("올바른 경로 매개변수가 아닙니다.");
+                } catch (FileNotFoundException fnfe) {
+                    System.out.println("해당 파일을 찾을 수 없습니다.");
+                } catch (ParameterInaccurateException e) {
+                    System.out.println("파라미터 개수가 올바르지 않습니다..");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } catch (NoSuchElementException e) {
                 System.out.println();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            
         }
-        
     }
     
     /**
      * List<String> to List<Path>
      *
-     * @param filePaths
-     * @return
+     * @param filePaths String 클래스 리스트
+     * @return List<Path>  Path 클래스 리스트
      */
     public static List<Path> convertStringToPath(List<String> filePaths) {
         List<Path> paths = new ArrayList<>();
@@ -183,9 +172,10 @@ public class Main {
     
     /**
      * 파일이 복사되는 경로가 동일한지 체크합니다.
-     * @param filePathFrom
-     * @param filePathTo
-     * @return
+     *
+     * @param filePathFrom 파일 소스
+     * @param filePathTo   파일 목적지
+     * @return boolean
      */
     private static boolean checkFilePathDup(String filePathFrom, String filePathTo) {
         if (filePathFrom.equals(filePathTo)) {
