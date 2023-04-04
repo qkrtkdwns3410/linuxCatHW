@@ -132,6 +132,8 @@ public class Main {
         removeFilePathFrom(filePathFrom); //남아있는 파일을 삭제합니다.
     }
     
+    public static boolean
+    
     /**
      * 파일을 삭제합니다.
      *
