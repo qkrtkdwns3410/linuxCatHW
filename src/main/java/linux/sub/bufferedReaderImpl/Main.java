@@ -38,9 +38,6 @@ class CustomBufferedReader {
     private Reader in;
     private char[] chars;
     
-    private char[] leftOver;
-    private int leftOverLen;
-    
     private StringBuilder sb;
     
     private static int DEFAULT_BUFFER_SIZE = 5;
@@ -52,8 +49,6 @@ class CustomBufferedReader {
     public CustomBufferedReader(Reader in, int bs) {
         this.in = in;
         chars = new char[bs];
-        leftOver = new char[bs];
-        leftOverLen = 0;
         this.sb = new StringBuilder();
     }
     
