@@ -39,7 +39,6 @@ class CustomBufferedReader {
     private char[] chars;
     
     private char[] leftOver;
-    private int leftOverLen;
     
     private static int DEFAULT_BUFFER_SIZE = 5;
     
@@ -51,14 +50,12 @@ class CustomBufferedReader {
         this.in = in;
         chars = new char[bs];
         leftOver = new char[bs];
-        leftOverLen = 0;
     }
     
     public String readLine() throws IOException {
         StringBuilder sb = new StringBuilder();
-        if (leftOverLen > 0) { // 이전에 남은 값을  Stringbuilder 에 담아줍니다,
-            sb.append(leftOver, 0, leftOverLen);
-            leftOverLen = 0;//길이 초기화
+        if (leftOver.length > 0) { // 이전에 남은 값을  Stringbuilder 에 담아줍니다,
+            sb.append(leftOver, 0, leftOver.length);
         }
         chars = new char[DEFAULT_BUFFER_SIZE]; // 버퍼 초기화 ( 이전값이 남아있기에 )
         while (true) {
@@ -71,7 +68,6 @@ class CustomBufferedReader {
             if (index != -1) {
                 sb.append(chars, 0, index);
                 System.arraycopy(chars, index + 1, leftOver, 0, len - index-1);// char 개행이후의 값을 저장합니다.
-                leftOverLen = len - index - 1;// 개행 이후의 길이를 저장합니다.
                 break;
                 
             } else {
