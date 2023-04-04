@@ -17,11 +17,20 @@ import java.io.InputStreamReader;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        String s = readLine();
-        System.out.println("s = " + s);
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String s1 = br.readLine();
+        System.out.println("s1 = " + s1);
+    
+        CustomBufferedReader cbr = new CustomBufferedReader();
+    
+        String s2 = cbr.readLine();
+        System.out.println("s2 = " + s2);
     }
     
-    public static String readLine() throws IOException {
+}
+
+class CustomBufferedReader {
+    public  String readLine() throws IOException {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             StringBuilder sb = new StringBuilder();
             char[] buffer = new char[5];
@@ -35,7 +44,7 @@ public class Main {
                 if (index != -1) {
                     sb.append(buffer, 0, index);
                     break;
-                
+                    
                 } else {
                     sb.append(buffer, 0, len);
                 }
@@ -43,5 +52,4 @@ public class Main {
             return sb.toString();
         }
     }
-    
 }
