@@ -37,7 +37,7 @@ public class Main {
                  * 2023.04.03
                  * @박상준
                  * */
-                command = Command.getCommandByName(function);
+                command = Command.getCommandByName(function.toLowerCase());
                 if (command == null) {
                     System.out.println("command not found: " + function);
                     continue;
@@ -131,8 +131,6 @@ public class Main {
         createFileInputOutputStream(filePathFrom, filePathTo);
         removeFilePathFrom(filePathFrom); //남아있는 파일을 삭제합니다.
     }
-    
-    public static boolean
     
     /**
      * 파일을 삭제합니다.
