@@ -1,5 +1,7 @@
 package linux.sub.main;
 
+import java.util.Objects;
+
 /**
  * packageName    : linux.sub.main
  * fileName       : Command
@@ -30,8 +32,11 @@ public enum Command {
     
     public static Command getCommandByName(String name) {
         for (Command command : Command.values()) {
-            if (command.getName()
-                        .equalsIgnoreCase(name)) {
+//            if (command.getName()
+//                        .equalsIgnoreCase(name)) {
+//                return command;
+//            }
+            if (Objects.equals(command.getName(), name)) {
                 return command;
             }
         }

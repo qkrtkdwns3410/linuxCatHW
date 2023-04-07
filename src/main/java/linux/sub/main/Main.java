@@ -1,13 +1,14 @@
 package linux.sub.main;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
 /**
  * packageName    : linux.sub.main
@@ -20,43 +21,6 @@ import java.util.stream.Stream;
  * -----------------------------------------------------------
  * 2023-03-31        ipeac       최초 생성
  */
-class PolicyValidator {
-    /**
-     * 파일이 복사되는 경로가 동일한지 체크합니다.
-     *
-     * @param filePathFrom 파일 소스
-     * @param filePathTo   파일 목적지
-     * @return boolean
-     */
-    public static boolean isCheckFilePathDup(String filePathFrom, String filePathTo) {
-        if (filePathFrom.equals(filePathTo)) {
-            System.out.println("파일 경로가 동일합니다");
-            return true;
-        }
-        return false;
-    }
-    
-    public static boolean isExistFilePathTo(String filePathTo) {
-        boolean isFileExistInTo = Files.exists(Path.of(filePathTo));
-        if (isFileExistInTo) {
-            return true;
-        }
-        return false;
-    }
-    
-    public static boolean isInputYesOrNo(String filePathTo) {
-        System.out.println("이미 같은 이름의 파일이 존재합니다.");
-        System.out.printf("%s 위치에 덮어쓰시겠습니까? (Y/N)", filePathTo);
-        Scanner scanner = new Scanner(System.in);
-        String answer = scanner.nextLine();
-        boolean isYes = answer.equalsIgnoreCase("Y");
-        if (isYes) {
-            return true;
-        }
-        return false;
-    }
-    
-}
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -73,7 +37,7 @@ public class Main {
                  * 2023.04.03
                  * @박상준
                  * */
-                command = Command.getCommandByName(function);
+                command = Command.getCommandByName(function.toLowerCase());
                 if (command == null) {
                     System.out.println("command not found: " + function);
                     continue;
@@ -152,11 +116,9 @@ public class Main {
      * @param filePathTo   최종 이동시킬 파일의 경로 (파일이름 포함)
      **/
     public static void copyFile(String filePathFrom, String filePathTo) throws IOException {
-        if (PolicyValidator.isCheckFilePathDup(filePathFrom, filePathTo)) return;
-        if (PolicyValidator.isExistFilePathTo(filePathTo)) {
-            if (!PolicyValidator.isInputYesOrNo(filePathTo)) { // N -> 덮어쓰지 않음을 입력받은 경우 종료
-                return;
-            }
+        if (isCheckFilePathDup(filePathFrom, filePathTo)) return;
+        if (isExistFilePathTo(filePathTo)) {
+            filePathTo = numberingFileSequence(filePathTo, 0, 0);
         }
         createFileInputOutputStream(filePathFrom, filePathTo);
     }
@@ -168,11 +130,9 @@ public class Main {
      * @param filePathTo   최종 이동시킬 파일의 경로 (파일이름 포함)
      **/
     public static void moveFile(String filePathFrom, String filePathTo) throws IOException {
-        if (PolicyValidator.isCheckFilePathDup(filePathFrom, filePathTo)) return;
-        if (PolicyValidator.isExistFilePathTo(filePathTo)) { //파일 이동 경로에 해당 파일이 이미 존재한다면
-            if (!PolicyValidator.isInputYesOrNo(filePathTo)) { // N -> 덮어쓰지 않음을 입력받은 경우 종료
-                return;
-            }
+        if (isCheckFilePathDup(filePathFrom, filePathTo)) return;
+        if (isExistFilePathTo(filePathTo)) { //파일 이동 경로에 해당 파일이 이미 존재한다면
+            filePathTo = numberingFileSequence(filePathTo, 0, 0);
         }
         createFileInputOutputStream(filePathFrom, filePathTo);
         removeFilePathFrom(filePathFrom); //남아있는 파일을 삭제합니다.
@@ -226,7 +186,7 @@ public class Main {
      */
     public static void findFile(List<String> filePath) throws IOException {
         List<Path> paths = convertStringToPath(filePath);
-       readAndWriteFiles(paths);
+        readAndWriteFiles(paths);
     }
     
     /**
@@ -237,7 +197,7 @@ public class Main {
      */
     private static void readAndWriteFiles(List<Path> paths) {
         for (Path path : paths) {
-            try (InputStream is = openBufferedFileInputStream(path.toString()); OutputStream os =  new BufferedOutputStream(System.out)) {
+            try (InputStream is = openBufferedFileInputStream(path.toString()); OutputStream os = new BufferedOutputStream(System.out)) {
                 byte[] bytes = new byte[1024 * 1024];
                 while (true) {
                     int len = is.read(bytes);
@@ -260,12 +220,84 @@ public class Main {
     }
     
     /**
-     * 해당 내용을 forEach 를 통해 프린트
+     * 파일이 복사되는 경로가 동일한지 체크합니다.
      *
-     * @param fileContents 파일의 내용이 String 값으로 담겨있음
+     * @param filePathFrom 파일 소스
+     * @param filePathTo   파일 목적지
+     * @return boolean
      */
-    public static void printContents(Stream<String> fileContents) {
-        fileContents.forEach(System.out::println);
+    public static boolean isCheckFilePathDup(String filePathFrom, String filePathTo) {
+        if (filePathFrom.equals(filePathTo)) {
+            System.out.println("파일 경로가 동일합니다");
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean isExistFilePathTo(String filePathTo) {
+        boolean isFileExistInTo = Files.exists(Path.of(filePathTo));
+        if (isFileExistInTo) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * 파일 확장자를 구합니다.
+     */
+    public static String getFileExtension(Path filePath) {
+        String filename = filePath.getFileName()
+                                  .toString();
+        int dotIdx = filename.lastIndexOf(".");
+        if (dotIdx == -1) {
+            return "";
+        } else {
+            return filename.substring(dotIdx + 1);
+        }
+    }
+    
+    /**
+     * 확장자를 뺸 경로를 구합니다.
+     */
+    public static String getFilenameExcludeExtension(Path filePath) {
+        String filename = filePath.toString();
+        int dotIdx = filename.lastIndexOf(".");
+        if (dotIdx == -1) {
+            return "";
+        } else {
+            return filename.substring(0, dotIdx);
+        }
+    }
+    
+    public static String namingFile(String filePath, String fileExtension, int seq) {
+        StringBuilder sb = new StringBuilder();
+        if (seq == 1) {
+            sb.append(filePath)
+                    .append("_");
+        } else {
+            sb.append(filePath.substring(0, filePath.length() - 1))
+        }
+        sb.append(seq)
+                .append(".")
+                .append(fileExtension);
+        return sb.toString();
+    }
+    
+    public static String numberingFileSequence(String filePathTo, int seq, int depth) {
+        if (depth > 100) { // 재귀 깊이 설정
+            System.out.println("동일한 파일의 이름이 존재하며, 파일 이름을 대체할 수 없습니다.");
+            return "";
+        }
+        Path path = Paths.get(filePathTo);
+        String fileExtension = getFileExtension(path); // 파일 확장자
+        String filePath = getFilenameExcludeExtension(path); // 파일 확장자를 뺀 경로까지 구합니다.
+        
+        if (Files.exists(path)) {
+            return numberingFileSequence(namingFile(filePath, fileExtension, ++seq), seq, depth + 1);
+        } else {
+            System.out.println("이미 같은 이름의 파일이 존재하여 파일이름에 순번을 부여했습니다. [filename : " + path.getFileName() + "]");
+            return filePathTo;
+        }
     }
     
     /**
