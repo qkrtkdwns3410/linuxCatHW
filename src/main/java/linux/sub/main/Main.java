@@ -275,7 +275,7 @@ public class Main {
             sb.append(filePath)
                     .append("_");
         } else {
-            sb.append(filePath.substring(0, filePath.length() - 1))
+            sb.append(filePath, 0, filePath.length() - 1);
         }
         sb.append(seq)
                 .append(".")
