@@ -44,7 +44,6 @@ public class Main2 {
             // 사람이 편하기 처리하기 위하여 이진코드(물리데이터)를 논리적 데이터의 대표격인 String 으로 변환합니다.
             String s = new String(bytes, 0, len, StandardCharsets.UTF_8);
             System.out.print(s);
-            
         }
     }
 }
