@@ -19,15 +19,15 @@ import java.nio.charset.StandardCharsets;
 public class Main3 {
     public static void main(String[] args) throws IOException {
         String word = " qijwieqwehqj lqkjdlasjdlj lasjdla lsda";
-        byte[] wordByte = word.getBytes(StandardCharsets.UTF_8);
-        InputStream is = new ByteArrayInputStream(wordByte);
-        byte[] bytes = new byte[4];
+        byte[] bytes = word.getBytes(StandardCharsets.UTF_8);
+        InputStream bis = new ByteArrayInputStream(bytes);
+        byte[] buffer = new byte[4];
         while (true) {
-            int len = is.read(bytes);
+            int len = bis.read(buffer);
             if (len == -1) {
                 break;
             }
-            String s = new String(bytes, 0, len, StandardCharsets.UTF_8);
+            String s = new String(buffer, 0, len, StandardCharsets.UTF_8);
             System.out.print(s);
         }
     }
