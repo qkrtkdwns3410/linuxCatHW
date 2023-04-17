@@ -21,6 +21,7 @@ public class Task {
     public static int createFailCnt = 0;
     public static Map<Integer, Integer> executeFailcntMap = new HashMap<>();
     
+    //해당 문제를 예외처리까지 생각하는지 궁금합니다.
     public static void main(String[] args) throws IOException {
         FastReader rd = new FastReader();
         int n = rd.nextInt();
@@ -40,7 +41,7 @@ public class Task {
         //사용가능한 태그 출력
         System.out.print("사용가능한 TAG: ");
         for (Integer integer : TAG) {
-            System.out.print(integer+" ");
+            System.out.print(integer + " ");
         }
         System.out.println();
         
@@ -50,8 +51,20 @@ public class Task {
         //수행 실패한 태그 출력(내림차순)
         List<Map.Entry<Integer, Integer>> entries = new ArrayList<>(executeFailcntMap.entrySet());
         //밸류 기준 내림차순 정렬
-        entries.sort((o1, o2) -> o2.getValue()
-                                         .compareTo(o1.getValue()));
+        entries.sort(new Comparator<Map.Entry<Integer, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2) {
+                //밸류 기준 내림차순 정렬
+                int returnValue = o2.getValue()
+                                          .compareTo(o1.getValue());
+                //밸류값이 동일한 경우 키값으로 오름차순
+                if (returnValue == 0) {
+                    returnValue = o1.getKey()
+                                          .compareTo(o2.getKey());
+                }
+                return returnValue;
+            }
+        });
         System.out.print("TASK 수행 실패한 태그: ");
         for (Map.Entry<Integer, Integer> entry : entries) {
             System.out.print(entry.getKey() + "(" + entry.getValue() + ") ");
