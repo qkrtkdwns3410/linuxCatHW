@@ -1,6 +1,5 @@
 package linux.sub.playground;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,24 +19,21 @@ import java.nio.charset.StandardCharsets;
 public class Main3 {
     public static void main(String[] args) throws IOException {
         String word = "dkajldjlajd lajdlaj ldjaslj dlaj dal djlaskjdal jlas";
-        //논리적 데이터를 물리적 데이터로 변환합니다.
+        //물리적 데이터를 논리적 데이터로 변환합니다.
         byte[] bword = word.getBytes(StandardCharsets.UTF_8);
-        //물리적 데이터에 스트림을 연결합니다.
+        //물리적 데이터를 읽기위해 입력 스트림을 연결합니다.
         InputStream is = new ByteArrayInputStream(bword);
-        //버퍼링된 보조스트림 연결, 8192 사이즈가 꽉찰때 flush 혹은 close 호출시까지 스트림을 유지합니다. => 이 보조스트림은 기반 스트림의 버퍼의 개념과 다릅니다.
-        InputStream bis = new BufferedInputStream(is);
         //스트리밍
-        //1) 적절한 처리단위를 정하여
+        //1 ) 적절한 처리단위를 정하여
         byte[] bytes = new byte[4];
-        //2) 조금씩 스트림처리
+        //2) 조금씩 스트림을 처리합니다.
         while (true) {
-            //처리단위만큼 버퍼에 씀
-            int len = bis.read(bytes);
+            //처리단위만큼 스트림을 입력받음
+            int len = is.read(bytes);
+            //-1 을 반환한다면 스트림의 종료를 의미합니다.
             boolean eol = len == -1;
-            if (eol) {
-                break;
-            }
-            //물리 -> 논
+            if(eol) break;
+            //입력받은 물리 데이터를 출력으 ㄹ위해 논리데이터로 변환합니다.
             String s = new String(bytes, 0, len, StandardCharsets.UTF_8);
             System.out.print(s);
         }
