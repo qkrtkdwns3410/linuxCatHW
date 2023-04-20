@@ -40,7 +40,7 @@ public class Main {
             List<String> attributes = parseInputLines(st);//데이터 파싱
             //=========유효성 검증=============//
             int validatorReturn = validator(attributes, notCreatedTask, createFailCnt, executeFailMap); // 유효성 검증
-            boolean isNotValid = validatorReturn == -1;
+            boolean isNotValid = validatorReturn == 1;
             boolean isNotValidParam = validatorReturn == 0;
             if (isNotValid) {
                 n++;
@@ -105,7 +105,7 @@ public class Main {
                     return 1;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("execute [태그넘버 : 숫자] 만 가능합니다.");
+                System.out.println("execute [태그넘버 : 숫자혹은 유효한 범위내의 숫자만] 만 가능합니다.");
                 return 1;
             }
             
