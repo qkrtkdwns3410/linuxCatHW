@@ -1,5 +1,7 @@
 package linux.sub.bufferedReaderImpl;
 
+import linux.java.inputstreamrw.MyString;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,18 +20,9 @@ import java.io.Reader;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//        String s1 = br.readLine();
-//        System.out.println("s1 = " + s1);
-//        String s2 = br.readLine();
-//        System.out.println("s2 = " + s2);
-        
-        CustomBufferedReader cbr = new CustomBufferedReader(new InputStreamReader(System.in));
-        
-        String s3 = cbr.readLine();
-        System.out.println("s3 = " + s3);
-        String s4 = cbr.readLine();
-        System.out.println("s4 = " + s4);
+        MyString myString = new MyString(new byte[]{98, 99, 97});
+        myString.print();
+        myString.subString(0,2);
     }
     
 }
