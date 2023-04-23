@@ -42,6 +42,7 @@ public class StandardIOEx3 {
             System.out.print(s);
         }
         
+        
     }
     
 }
