@@ -31,5 +31,4 @@ public class FileEx2 {
             System.out.println(files[i].isDirectory() ? "[" + fileName + "]" : fileName);
         }
     }
-    
 }

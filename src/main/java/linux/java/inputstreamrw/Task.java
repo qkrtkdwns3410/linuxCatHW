@@ -3,9 +3,9 @@ package linux.java.inputstreamrw;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Objects;
-import java.util.StringJoiner;
-import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * packageName    : linux.java.inputstreamrw
@@ -28,118 +28,53 @@ public class Task {
         n = Integer.parseInt(br.readLine());
         System.out.println("n = " + n);
         while (n > 0) {
-            String lines = br.readLine();
-            String[] splited = lines.split(" ");
-            MessageSender msgResult = checkFormat(lines);
-            System.out.println("msgResult = " + msgResult.getMessage());
-            boolean isFalse = Objects.equals(msgResult.isStatus(), false);
-            if (isFalse) {
-                System.out.println(msgResult.getMessage());
-                continue;
-            }
-            String function = splited[0];
-            MessageSender returnedFunction = isExistFunction(function);
-            boolean isNotRightFunction = Objects.equals(returnedFunction.isStatus(), false);
-            if (isNotRightFunction) {
-                System.out.println(returnedFunction.getMessage());
-                continue;
-            }
-            
-            
+            String[] splited = br.readLine()
+                                       .split(" ");
+            checkFormat(splited);
+            String function = FunctionType.valueOfFunction(splited);
+            n--;
         }
     }
     
-    public static MessageSender isExistFunction(String funtion) {
-        String returned;
+    private static void execute() {
+    
+    }
+    
+    private static void create() {
+    
+    }
+    
+    
+    public static void checkFormat(String[] splited) {
         try {
-            returned = FunctionType.getValue(funtion);
-            
+            String function = splited[0];
+            isLetter(function);
+            String tagNum = splited[1];
+            isDigit(tagNum);
         } catch (IllegalArgumentException e) {
-            return new MessageSender("해당 함수는 존재하지 않습니다", false);
+            e.printStackTrace();
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
-        return new MessageSender("올바른 함수입니다.", true, returned);
-        
     }
     
-    
-    //입력 콘텍스트..
-    //첫번째 값이 문자열인지 두번째값이 숫자형인지 체크
-    //뭐가 들어오든간 난 상관안합니데이
-    public static MessageSender checkFormat(String lines) {
-        StringTokenizer st = new StringTokenizer(lines, " ");
-        String function = st.nextToken();
-        boolean isLetter = isLetter(function);
-        if (!isLetter) {
-            return new MessageSender("첫번째 인수가 문자열이 아닙니다.", false);
-        }
-        if (st.hasMoreElements()) {
-            String tagNum = st.nextToken();
-            boolean isDigit = isDigit(tagNum);
-            if (!isDigit) {
-                return new MessageSender("두번째 인수가 숫자형이 아닙니다.", false);
-            }
-        }
-        return new MessageSender("올바른 인수입니다.", true);
-    }
-    
-    public static boolean isLetter(String value) {
+    public static void isLetter(String value) {
         for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
             boolean isDigit = Character.isLetter(c);
             if (!isDigit) {
-                return false;
+                throw new IllegalArgumentException("문자형이 아닙니다");
             }
         }
-        return true;
     }
     
-    public static boolean isDigit(String value) {
+    public static void isDigit(String value) {
         for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
             boolean isNotDigit = !Character.isDigit(c);
             if (isNotDigit) {
-                return false;
+                throw new IllegalArgumentException("숫자형이 아닙니다.");
             }
         }
-        return true;
-    }
-}
-
-class MessageSender {
-    private String message;
-    private boolean status;
-    
-    private String value;
-    
-    public MessageSender(String message, boolean status) {
-        new MessageSender(message, status, "");
-    }
-    
-    public MessageSender(String message, boolean status, String value) {
-        this.message = message;
-        this.status = status;
-        this.value = value;
-    }
-    
-    public String getMessage() {
-        return message;
-    }
-    
-    public boolean isStatus() {
-        return status;
-    }
-    
-    public String getValue() {
-        return value;
-    }
-    
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", MessageSender.class.getSimpleName() + "[", "]")
-                       .add("message='" + message + "'")
-                       .add("status=" + status)
-                       .add("value=" + value)
-                       .toString();
     }
 }
 
@@ -149,17 +84,32 @@ enum FunctionType {
     ;
     private final String value;
     
+    //미리 캐싱으로 빠른 접근 또한 HashMap으로 순회가 필요없음
+    private static final Map<String, FunctionType> FUNCTION_TYPE_MAP =
+            Stream.of(values())
+                    .collect(Collectors.toMap(FunctionType::getValue, v -> v));
+    
     FunctionType(String value) {
         this.value = value;
     }
     
-    public static String getValue(String function) {
-        for (FunctionType value : FunctionType.values()) {
-            if (Objects.equals(function, value.value)) {
-                return value.value;
-            }
+    public static String valueOfFunction(String[] function) {
+        String name = "";
+        try {
+            name = FUNCTION_TYPE_MAP.get(function[0])
+                           .getValue();
+        } catch (NullPointerException e) {
+            System.out.println("올바른 함수가 아닙니다.");
         }
-        throw new IllegalArgumentException("유효하지 않은 function입니다. : " + function);
+        return name;
+    }
+    
+    public String getValue() {
+        return value;
+    }
+    
+    public void run(String function) {
+    
     }
     
     
