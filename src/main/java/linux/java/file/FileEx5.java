@@ -2,7 +2,6 @@ package linux.java.file;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
 
 /**
  * packageName    : linux.java.file
@@ -34,14 +33,6 @@ public class FileEx5 {
         File dir = new File(currDir);
         File[] files = dir.listFiles();
         
-        Comparator comp = new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                long time1 = ((File) o1).lastModified();
-                long time2 = ((File) o2).lastModified();
-                
-            }
-            
-        }
+        
     }
 }
