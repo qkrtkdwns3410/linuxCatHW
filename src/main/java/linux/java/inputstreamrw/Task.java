@@ -19,7 +19,6 @@ import java.util.stream.Stream;
  * 2023-04-23        ipeac       최초 생성
  */
 public class Task {
-    static int n;
     
     public static void main(String[] args) throws IOException {
         //자바에서의 우선순위큐는 기본적으로 최소힙으로 구현되어있다. 파이썬도 그랬는데 ..
@@ -36,46 +35,80 @@ public class Task {
         //바이트 스트림을 문자 스트림으로 변환하여 입력받기 위하여 InputStreamReader를 사용하고,
         // 별도 버퍼링처리를 통해 효율화를 하기위함 + readline API 사용을 하기위해(개행문자 기준으로 입력을 반환하기 위해) BufferReader를 사용했습니다.
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        n = Integer.parseInt(br.readLine());
+        int n = Integer.parseInt(br.readLine());
         System.out.println("n = " + n);
         while (n > 0) {
-            String[] splited = br.readLine()
-                                       .split(" ");
-            checkFormat(splited);
-            //ENUM 타입에서 밸류값의 순회보다 static hashmap에 미리 캐싱해두고 값을 사용하는 방법이 더 효율적인 것 같음
-            // 하지만 종류가 많아지는 경우 메모리상에 불이익이 있지않을까 생각은 되는데, 기능이 많아봤자 얼마나 많아지겠어 라는 생각을 함
-            String function = FunctionType.valueOfFunction(splited);
-            //일단 분기는 필요하다..
-            switch (function) {
-                case "execute":
-                    try {
-                        int tagNum = Integer.parseInt(splited[1]);
-                        boolean executable = !tagQueue.contains(tagNum);
-                        if (executable) {
+            try {
+                String[] splited = br.readLine()
+                                           .split(" ");
+                System.out.println("splited = " + Arrays.toString(splited));
+                checkFormat(splited);
+                //ENUM 타입에서 밸류값의 순회보다 static hashmap에 미리 캐싱해두고 값을 사용하는 방법이 더 효율적인 것 같음
+                // 하지만 종류가 많아지는 경우 메모리상에 불이익이 있지않을까 생각은 되는데, 기능이 많아봤자 얼마나 많아지겠어 라는 생각을 함
+                FunctionType function = FunctionType.valueOfFunction(splited);
+                //일단 분기는 필요하다..
+                switch (function) {
+                    case EXECUTE:
+                        try {
+                            //이부분도 단순하게 만들어 보려고 했으나, 분리처리하는방법말고는 생각이 나질않음.
+                            //태그저장고라는 tagQueue 때문에 분리처리로 강제되는것 같음. 일단 없어야 실행이 가능해지니까
+                            int tagNum = Integer.parseInt(splited[1]);
+                            boolean notExecutable = tagQueue.contains(tagNum);
+                            if (notExecutable) {
+                                executeFailMap.put(String.valueOf(tagNum), executeFailMap.getOrDefault(String.valueOf(tagNum), 0) + 1);
+                                throw new IllegalArgumentException("해당 태그를 수행할수 없습니다.");
+                            }
                             tagQueue.add(tagNum);
-                            break;
+                            n--;
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
                         }
-                        throw new IllegalArgumentException("해당 태그를 수행할수 없습니다.");
-                    } catch (IllegalArgumentException e) {
-                        executeFailMap.put(splited[1], executeFailMap.getOrDefault(splited[1], 0) + 1);
-                        e.printStackTrace();
-                    }
-                case "create":
-                    try {
-                        //log n false->NPE
-                        tagQueue.poll();
                         break;
-                    } catch (NullPointerException e) {
-                        createFailCnt += 1;
-                        e.printStackTrace();
-                    }
-                default:
-                    break;
+                    case CREATE:
+                        try {
+                            n--;
+                            //log n false->NPE
+                            if (tagQueue.isEmpty()) {
+                                throw new NoSuchElementException("생성가능한 태그가 없습니다");
+                            }
+                            tagQueue.poll();
+                        } catch (NoSuchElementException e) {
+                            createFailCnt += 1;
+                            e.printStackTrace();
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
             }
-            n--;
+            
         }
-        
+        //출력
+        System.out.print("사용가능한 TAG:");
+        printQueue(tagQueue);
+        System.out.println("TASK 생성 실패: " + createFailCnt);
+        System.out.print("TASK 수행 실패한 태그");
+        printMap(executeFailMap);
     }
+    
+    public static void printMap(Map<?, ?> map) {
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            System.out.print(entry.getKey() + "(" + entry.getValue() + ") ");
+        }
+        System.out.println();
+    }
+    
+    public static void printQueue(Queue<?> queue) {
+        Iterator<?> iterator = queue.iterator();
+        while (iterator.hasNext()) {
+            System.out.print(iterator.next() + " ");
+        }
+        System.out.println();
+    }
+    
     
     public static void checkFormat(String[] splited) {
         try {
@@ -108,34 +141,39 @@ public class Task {
             }
         }
     }
+    
+    public enum FunctionType {
+        EXECUTE("execute"), CREATE("create"),
+        ;
+        private final String value;
+        
+        //미리 캐싱으로 빠른 접근 또한 HashMap으로 순회가 필요없음
+        private static final Map<String, FunctionType> FUNCTION_TYPE_MAP = Stream.of(values())
+                                                                                   .collect(Collectors.toMap(FunctionType::getValue, v -> v));
+        
+        FunctionType(String value) {
+            this.value = value;
+        }
+        
+        public static FunctionType valueOfFunction(String[] function) {
+            try {
+                FunctionType result = FUNCTION_TYPE_MAP.get(function[0]);
+                if (result == null) {
+                    throw new IllegalArgumentException("올바른 함수가 아닙니다.");
+                }
+                
+                return result;
+            } catch (NullPointerException e) {
+                System.out.println("올바른 함수가 아닙니다.");
+                throw e;
+            }
+        }
+        
+        public String getValue() {
+            return value;
+        }
+        
+    }
 }
 
-enum FunctionType {
-    EXECUTE("execute"), CREATE("create"),
-    ;
-    private final String value;
-    
-    //미리 캐싱으로 빠른 접근 또한 HashMap으로 순회가 필요없음
-    private static final Map<String, FunctionType> FUNCTION_TYPE_MAP = Stream.of(values())
-                                                                               .collect(Collectors.toMap(FunctionType::getValue, v -> v));
-    
-    FunctionType(String value) {
-        this.value = value;
-    }
-    
-    public static String valueOfFunction(String[] function) {
-        String name = "";
-        try {
-            name = FUNCTION_TYPE_MAP.get(function[0])
-                           .getValue();
-        } catch (NullPointerException e) {
-            System.out.println("올바른 함수가 아닙니다.");
-        }
-        return name;
-    }
-    
-    public String getValue() {
-        return value;
-    }
-    
-}
+
