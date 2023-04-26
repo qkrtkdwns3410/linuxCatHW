@@ -5,10 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * packageName    : linux.sub.main
@@ -195,28 +193,44 @@ public class Main {
      * @param paths 받은 파일의 경로 리스트
      * @return List<String> 파일을 String 으로 변환
      */
-    private static void readAndWriteFiles(List<Path> paths) {
-        for (Path path : paths) {
-            try (InputStream is = openBufferedFileInputStream(path.toString()); OutputStream os = new BufferedOutputStream(System.out)) {
-                byte[] bytes = new byte[1024 * 1024];
-                while (true) {
-                    int len = is.read(bytes);
-                    if (len == -1) {
-                        break;
-                    }
-                    os.write(bytes, 0, len);
-                    
-                }
-                os.flush();
-                
-                // buffer 내의 데이터를 모두 출력합니다. => 버퍼링된 데이터를 출력 스트림으로 반환합니다.
-                // BufferedOutputStream 을 사용하면 내부적으로 출력 스트림에 쓰여질 데이터를 미리 버퍼링하기 때문에
-                // 데이터의 양이 적은 경우에는 버퍼에 계속 저장되어있습니다.
-                
-            } catch (IOException nsfe) {
-                System.out.println();
-            }
+    //TODO 111
+    private static void readAndWriteFiles(List<Path> paths) throws FileNotFoundException {
+        List<InputStream> inputStreams = convertToInputStream(paths);
+        OutputStream os = new BufferedOutputStream(System.out);
+        byte[] bytes = new byte[1024];
+        for (InputStream is : inputStreams) {
+            flushOutputStream(is,bytes,os);
         }
+        inputStreams.forEach(is-> flushOutputStream(is,bytes,os));
+    }
+    public static void flushOutputStream(InputStream is,byte[] bytes,OutputStream os) {
+        try (is) {
+            while (true) {
+                int len = is.read(bytes);
+                if (len == -1) {
+                    break;
+                }
+                os.write(bytes, 0, len);
+            }
+            os.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static List<InputStream> convertToInputStream(List<Path> paths) throws FileNotFoundException {
+        List<InputStream> inputStreams = new ArrayList<>();
+        for (Path path : paths) {
+            InputStream is = openBufferedFileInputStream(path.toString());
+            inputStreams.add(is);
+        }
+        return Collections.unmodifiableList(inputStreams);
+    }
+    
+    public static List<InputStream> convertToInputStream2(List<Path> paths) throws FileNotFoundException {
+        return paths.stream()
+                       .map(Path::toString)
+                       .map(Main::openBufferedFileInputStream)
+                       .collect(Collectors.toUnmodifiableList());
     }
     
     /**
@@ -275,7 +289,7 @@ public class Main {
             sb.append(filePath)
                     .append("_");
         } else {
-            sb.append(filePath.substring(0, filePath.length() - 1))
+            sb.append(filePath, 0, filePath.length() - 1);
         }
         sb.append(seq)
                 .append(".")
@@ -318,8 +332,13 @@ public class Main {
      * @return
      * @throws FileNotFoundException
      */
-    public static InputStream openBufferedFileInputStream(String filename) throws FileNotFoundException {
-        return new BufferedInputStream(new FileInputStream(filename));
+    public static InputStream openBufferedFileInputStream(String filename)  {
+        try {
+            return new BufferedInputStream(new FileInputStream(filename));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e); // e 어떤 에러인지..
+        }
     }
     
     /**
