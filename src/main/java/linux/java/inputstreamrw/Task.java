@@ -7,17 +7,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * packageName    : linux.java.inputstreamrw
- * fileName       : Task
- * author         : ipeac
- * date           : 2023-04-23
- * description    :
- * ===========================================================
- * DATE              AUTHOR             NOTE
- * -----------------------------------------------------------
- * 2023-04-23        ipeac       최초 생성
- */
 public class Task {
     
     public static void main(String[] args) throws IOException {
@@ -110,15 +99,14 @@ public class Task {
     }
     
     
-    public static void checkFormat(String[] splited) {
+    public static void checkFormat(String[] splited) throws ArrayIndexOutOfBoundsException {
         try {
             String function = splited[0];
             isLetter(function);
             String tagNum = splited[1];
             isDigit(tagNum);
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (ArrayIndexOutOfBoundsException ignored) {
+            throw new IllegalArgumentException("올바른 형식의 인수가 아닙니다");
         }
     }
     
