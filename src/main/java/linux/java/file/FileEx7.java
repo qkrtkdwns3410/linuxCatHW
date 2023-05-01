@@ -28,12 +28,6 @@ public class FileEx7 {
         File dir = new File(currDir);
         final String pattern = args[0];
         
-        String[] files = dir.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return false;
-            }
-        })
     }
     
 }
