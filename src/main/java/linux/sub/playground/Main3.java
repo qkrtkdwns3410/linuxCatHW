@@ -27,11 +27,10 @@ public class Main3 {
         byte[] bword = word.getBytes(StandardCharsets.UTF_8);
         //byte 배열은 메모리에 올라가있습니다. byteArris.. 로 스트리밍 처리를 해야합니다.
         InputStream is = new ByteArrayInputStream(bword);
-
         //스트리밍이란
         //1 .적절한 처리단위를 정하여
         byte[] bytes = new byte[4];
-        //2. 조금씩 스트림을 처리하는 행위를 말합니다.
+        //2. 조금씩 스트림을 처리하는 행위를 말합니다
         while (true) {
             int len = is.read(bytes);
             boolean eol = len == -1;
