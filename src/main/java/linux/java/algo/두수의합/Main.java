@@ -26,15 +26,11 @@ public class Main {
             int x = Integer.parseInt(br.readLine());
             
             List<Integer> convertedInts = Arrays.stream(arr).map(Integer::parseInt).sorted(Integer::compareTo).collect(Collectors.toList());
-            System.out.println("convertedInts = " + convertedInts);
             int start = 0;
             int end = n - 1;
             int ans = 0;
             while (start < end) {
                 int sum = convertedInts.get(start)+ convertedInts.get(end);
-                System.out.println("convertedInts.get(start) = " + convertedInts.get(start));
-                System.out.println("convertedInts.get(end)" + convertedInts.get(end));
-                System.out.println("sum = " + sum);
                 boolean sameX = sum == x;
                 boolean underX = sum < x;
                 
@@ -42,14 +38,13 @@ public class Main {
                     ans++;
                 } else if (underX) {
                     start++;
+                    continue;
                 }
                 end--;
             }
             System.out.println(ans);
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
-        } catch (IllegalArgumentException ae) {
         }
     }
-    
 }
