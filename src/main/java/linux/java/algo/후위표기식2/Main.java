@@ -22,6 +22,7 @@ public class Main {
             int n = Integer.parseInt(br.readLine());
             String[] inputs = br.readLine().split("");
             
+            Stack<Integer>
         } catch (IOException | ArrayIndexOutOfBoundsException | NumberFormatException e) {
             e.printStackTrace();
         }
