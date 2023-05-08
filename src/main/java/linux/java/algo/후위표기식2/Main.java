@@ -29,7 +29,7 @@ public class Main {
                     " || 이때 유효하지 않는 사용자 입력이라면 " +
                     "시스템에 넘기지 않는다. ||" +
                     "오로지 [명령어] [태그] 그냥 2개의 값만 들어온다는 사실만을 입력 컨텍스트는 인지한다."));
-            
+             
             System.out.println();
             System.out.println("처리 컨텍스트");
             System.out.println(
