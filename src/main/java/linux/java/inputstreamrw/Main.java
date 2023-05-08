@@ -22,17 +22,5 @@ public class Main {
         q.offer(3);
 
         System.out.println("q.poll() = " + q.poll());
-
-        Queue<Tag> tq = new PriorityQueue<>();
-        tq.offer(new Tag(5));
-        tq.offer(new Tag(1));
-        tq.offer(new Tag(3));
-
-        System.out.println("tq.poll() = " + tq.poll());
-
-        Tag tag = new Tag(1);
-        Tag tag2 = new Tag(1);
-
-        System.out.println(tag.equals(tag2));
     }
 }
