@@ -22,8 +22,8 @@ public class Task {
             try {
                 String[] splited = br.readLine().split(" ");
                 FunctionType f = FunctionType.from(splited[0]);
-                int tagNum = Optional.ofNullable(splited[1]).orElse(-1);
-                Function function = FunctionFactory.create(f, tagNum);
+                //입력 컨텍스트가 처리 컨텍스트에 영향을 주면 안됨.
+                Function function = FunctionFactory.create(f);
                 System.out.println("function = " + function);
             } catch (RuntimeException e) {
                 e.printStackTrace();
