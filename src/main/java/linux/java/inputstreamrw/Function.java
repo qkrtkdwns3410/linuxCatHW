@@ -14,20 +14,21 @@ import java.util.StringJoiner;
  * 2023-05-09        ipeac       최초 생성
  */
 public class Function implements Comparable<Function> {
-    String function;
-    int tagNum;
+    FunctionType function;
+    Tag tagNum;
     
-    public Function(String function, int tagNum) {
+    public Function(FunctionType function) {
+        this(function, new Tag(-1));
+    }
+    
+    public Function(FunctionType function, Tag tagNum) {
         this.function = function;
         this.tagNum = tagNum;
     }
     
-    public String getFunction() {
-        return function;
-    }
-    
-    public int getTagNum() {
-        return tagNum;
+    public boolean fail() {
+        
+        return true;
     }
     
     @Override
@@ -38,7 +39,7 @@ public class Function implements Comparable<Function> {
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
-            throw new RuntimeException("함수가 NULL");
+            throw new RuntimeException("비교대상이 NULL");
         }
         if (!(obj instanceof Function)) {
             return false;
@@ -57,7 +58,7 @@ public class Function implements Comparable<Function> {
     
     @Override
     public int compareTo(Function o) {
-        return this.tagNum - o.tagNum;
+        return this.tagNum.getTagNum() - o.tagNum.getTagNum();
     }
     
 }
