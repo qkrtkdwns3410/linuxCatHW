@@ -13,15 +13,9 @@ package linux.java.inputstreamrw;
  */
 public class FunctionFactory {
     
-    public static Function create(FunctionType f, int tagNum) {
+    public static Function create(FunctionType f, int tagNum) { //처리의 영역 시스템의 요구사항
         Function function = null;
-        String funcStr = f.getValue();
         
-        if (f.isTagYn()) {
-            function = new Function(funcStr, -1);
-        } else {
-            function = new Function(funcStr, tagNum);
-        }
         
         return function;
     }

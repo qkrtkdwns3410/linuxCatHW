@@ -1,30 +1,33 @@
 package linux.java.inputstreamrw;
 
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum FunctionType {
-    EXECUTE("execute", true), CREATE("create", false),
+    EXECUTE("execute"), CREATE("create"),
     ;
+    
     private final String value;
-    private final boolean tagYn;
+    private int tagNum;
+    
     
     //미리 캐싱으로 빠른 접근 또한 HashMap으로 순회가 필요없음
     private static final Map<String, FunctionType> FUNCTION_TYPE_MAP = Stream.of(values())
             .collect(Collectors.toMap(FunctionType::getValue, v -> v));
     
-    FunctionType(String value, boolean tagYn) {
+    FunctionType(String value) {
+        this(value, -1);
+    }
+    
+    FunctionType(String value, int tagNum) {
         this.value = value;
-        this.tagYn = tagYn;
+        this.tagNum = tagNum;
     }
     
     public static FunctionType from(String s) throws RuntimeException {
         FunctionType resultFunction = FUNCTION_TYPE_MAP.get(s);
-        if (resultFunction == null) {
-            throw new RuntimeException("올바른 함수가 아닙니다.");
-        }
-        
         return resultFunction;
     }
     
@@ -32,7 +35,15 @@ public enum FunctionType {
         return value;
     }
     
-    public boolean isTagYn() {
-        return tagYn;
+    public int getTagNum() {
+        return tagNum;
+    }
+    
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", FunctionType.class.getSimpleName() + "[", "]")
+                .add("value='" + value + "'")
+                .add("tagNum=" + tagNum)
+                .toString();
     }
 }

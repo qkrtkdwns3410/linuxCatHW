@@ -17,13 +17,17 @@ public class Function implements Comparable<Function> {
     String function;
     int tagNum;
     
-    public Function(String function) {
-        this(function, -1);
-    }
-    
     public Function(String function, int tagNum) {
         this.function = function;
         this.tagNum = tagNum;
+    }
+    
+    public String getFunction() {
+        return function;
+    }
+    
+    public int getTagNum() {
+        return tagNum;
     }
     
     @Override
@@ -55,6 +59,5 @@ public class Function implements Comparable<Function> {
     public int compareTo(Function o) {
         return this.tagNum - o.tagNum;
     }
-    //
     
 }
