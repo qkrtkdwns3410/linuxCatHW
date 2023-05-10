@@ -25,12 +25,9 @@ public class Task {
             try {
                 String[] splited = br.readLine().split(" ");
                 FunctionType f = FunctionType.from(splited[0]);//입력컨텍스트에서 생성되었지만, 처리컨텍스스트에 사용자 입력 검증
-                Function function = FunctionFactory.create(f, splited); // 여기에 splited 이 들어가는게 맞는가? => 머릿속으로 안된다는 건 알고있는데 대처법을 생각을 못하겠음
+                Function function = FunctionFactory.create(f, splited);
                 System.out.println("function = " + function);
                 //입력 컨텍스트가 처리 컨텍스트에 영향을 주면 안됨.
-                if (function.fail()) {
-                    throw new RuntimeException("수행불가");
-                }
                 
             } catch (RuntimeException e) {
                 e.printStackTrace();

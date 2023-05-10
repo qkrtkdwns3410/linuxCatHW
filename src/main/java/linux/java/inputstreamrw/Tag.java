@@ -15,16 +15,7 @@ public class Tag {
     private int tagNum;
     
     public Tag(int tagNum) {
-        if (1 <= tagNum && tagNum <= 9) {
-        
-        } else if (tagNum == -1) {
-        
-        }
         this.tagNum = tagNum;
-    }
-    
-    public Tag createTag(int tagNum) {
-        return new Tag(tagNum);
     }
     
     public int getTagNum() {
