@@ -1,5 +1,7 @@
 package linux.java.inputstreamrw;
 
+import java.util.StringJoiner;
+
 /**
  * packageName    : linux.java.inputstreamrw
  * fileName       : Tag
@@ -20,5 +22,12 @@ public class Tag {
     
     public int getTagNum() {
         return tagNum;
+    }
+    
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Tag.class.getSimpleName() + "[", "]")
+                .add("tagNum=" + tagNum)
+                .toString();
     }
 }

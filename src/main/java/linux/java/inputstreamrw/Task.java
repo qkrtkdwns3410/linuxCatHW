@@ -11,7 +11,7 @@ import java.util.Queue;
 public class Task {
     
     public static void main(String[] args) throws IOException {
-        Queue<Tag> executableTags = new PriorityQueue<>();
+        Queue<Tag> avaliableTags = new PriorityQueue<>();
         Map<Tag, Integer> failMap = new HashMap<>();
         
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -27,7 +27,8 @@ public class Task {
                 Function function = FunctionFactory.create(f, splited);
                 System.out.println("function = " + function);
                 //입력 컨텍스트가 처리 컨텍스트에 영향을 주면 안됨.
-                
+                //실패 케이스 태그수행시 없으면 실패임
+                function.fail();
             } catch (RuntimeException e) {
                 e.printStackTrace();
             }
