@@ -31,7 +31,7 @@ public class FunctionTypeAndTag {
     }
     
     public Tag getTagOrNull() {
-    
+        return this.tagOrNull;
     }
     
     public Optional<Tag> getTag() {

@@ -10,7 +10,6 @@ public enum FunctionType {
     ;
     
     private final String value;
-    private int tagNum;
     
     
     //미리 캐싱으로 빠른 접근 또한 HashMap으로 순회가 필요없음
@@ -18,21 +17,15 @@ public enum FunctionType {
             .collect(Collectors.toMap(FunctionType::getValue, v -> v));
     
     FunctionType(String value) {
-        this(value, -1);
-    }
-    
-    FunctionType(String value, int tagNum) {
+        if (value == null) {
+            throw new IllegalArgumentException("올바른 명령어가 아닙니다");
+        }
         this.value = value;
-        this.tagNum = tagNum;
     }
     
     public static FunctionType from(String s) {
         FunctionType resultFunction = null;
         resultFunction = FUNCTION_TYPE_MAP.get(s);
-        if (resultFunction == null) {
-            throw new RuntimeException("올바른 함수가 아닙니다");
-        }
-        
         return resultFunction;
     }
     
@@ -40,15 +33,10 @@ public enum FunctionType {
         return value;
     }
     
-    public int getTagNum() {
-        return tagNum;
-    }
-    
     @Override
     public String toString() {
         return new StringJoiner(", ", FunctionType.class.getSimpleName() + "[", "]")
                 .add("value='" + value + "'")
-                .add("tagNum=" + tagNum)
                 .toString();
     }
 }
