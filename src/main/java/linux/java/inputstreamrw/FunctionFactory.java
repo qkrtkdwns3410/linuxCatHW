@@ -16,8 +16,8 @@ public class FunctionFactory {
     public static Function create(FunctionType f, String[] splited) { //처리의 영역 시스템의 요구사항
         Function function = null;
         try {
-            int tagNum = Integer.parseInt(splited[1]);
-            function = new Function(f, new Tag(tagNum));
+            Tag tag = TagFactory.createTag(splited[1]);
+            function = new Function(f, tag);
         } catch (RuntimeException e) {
             function = new Function(f);
         }
