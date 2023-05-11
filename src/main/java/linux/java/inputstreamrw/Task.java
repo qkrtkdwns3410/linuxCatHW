@@ -12,8 +12,7 @@ public class Task {
     
     public static void main(String[] args) throws IOException {
         Queue<Tag> executableTags = new PriorityQueue<>();
-        Map<Tag, Integer> executeFailMap = new HashMap<>();
-        Map<Tag, Integer> createFailMap = new HashMap<>();
+        Map<Tag, Integer> failMap = new HashMap<>();
         
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int n = Integer.parseInt(br.readLine());
