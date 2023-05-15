@@ -3,62 +3,109 @@ package linux.java.algo.후위표기식2;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Random;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.StringJoiner;
 
 /**
  * packageName    : linux.java.algo.후위표기식2
  * fileName       : Main
  * author         : ipeac
- * date           : 2023-05-05
+ * date           : 2023-05-15
  * description    :
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
- * 2023-05-05        ipeac       최초 생성
+ * 2023-05-15        ipeac       최초 생성
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-            System.out.println("프로그래밍의 구조란?");
-            String inputString = "단단하고 격리된 개별 컨텍스트 공간을 구축하는 것을 의미한다.";
-            System.out.println(simplify(inputString));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in));) {
+            int n = Integer.parseInt(br.readLine());
             
-            System.out.println();
-            System.out.println("입력 컨텍스트");
-            System.out.println(simplify("사용자의 입력을 시스템이 이해할 수 있는 명확하게 캐시된 형태로 변환한다." +
-                    " || 이때 유효하지 않는 사용자 입력이라면 " +
-                    "시스템에 넘기지 않는다. ||" +
-                    "오로지 [명령어] [태그] 그냥 2개의 값만 들어온다는 사실만을 입력 컨텍스트는 인지한다."));
-             
-            System.out.println();
-            System.out.println("처리 컨텍스트");
-            System.out.println(
-                    simplify("시스템의 관점에서 추상화를 통해서 시스템을 단순화한다.  || " +
-                            "시스템 처리에 필요한 결과도 단순화한다."));
+            String expressionStr = br.readLine();
+            Operand[] operands = new Operand[26];
+            for (int i = 0; i < n; i++) {
+                operands[i] = Operand.from(br.readLine());
+            }
             
-            System.out.println();
-            System.out.println("출력 컨텍스트");
-            System.out.println(simplify("" +
-                    "출력을 위해서 필요한 최소한의 데이터를 설계를 하고 해당 데이터로 " +
-                    "출력의 니즈를 해결한다."));
-        } catch (IOException | ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            Expression expression = Expression.from(expressionStr);
+            Calc calc = new Calc(operands, expression);
+            calc.calculate();
+        } catch (RuntimeException e) {
             e.printStackTrace();
         }
+        
     }
     
-    public static String simplify(String sentence) {
-        String[] words = sentence.split("\\s+"); // 문장을 공백 단위로 나눠서 단어 배열 생성
-        int numOfBlanks = words.length / 3; // 빈칸으로 바꿀 단어의 수 계산
-        Random rand = new Random(); // 랜덤 객체 생성
+    /**
+     * DTO 격
+     */
+    static class Calc {
+        private final Operand[] operands;
+        private final Expression expression;
         
-        // 랜덤하게 선택된 인덱스의 단어를 빈칸으로 변경
-        for (int i = 0; i < numOfBlanks; i++) {
-            int idx = rand.nextInt(words.length);
-            words[idx] = "____";
+        public Calc(Operand[] operands, Expression expression) {
+            if (operands == null || expression == null) {
+                throw new IllegalArgumentException("null 은 안돼");
+            }
+            
+            this.operands = operands;
+            this.expression = expression;
         }
         
-        // 빈칸으로 변경된 단어를 다시 문장으로 연결하여 반환
-        return String.join(" ", words);
+        public void calculate() {
+            System.out.println("operands = " + Arrays.toString(operands));
+            System.out.println("expression = " + expression);
+        }
     }
     
+    static class Expression {
+        private String expression;
+        private final int MAX_LENGTH = 100;
+        
+        public Expression(String expression) {
+            if (expression.length() > MAX_LENGTH) {
+                String errMsg = MessageFormat.format("후위표현식의 길이가 {0}을 초과합니다.", MAX_LENGTH);
+                throw new IllegalArgumentException(errMsg);
+            }
+            this.expression = expression;
+        }
+        
+        public static Expression from(String s) {
+            return new Expression(s);
+        }
+        
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Expression.class.getSimpleName() + "[", "]")
+                    .add("expression='" + expression + "'")
+                    .add("MAX_LENGTH=" + MAX_LENGTH)
+                    .toString();
+        }
+    }
+    
+    /**
+     * 피연산자
+     */
+    static class Operand {
+        private int value;
+        
+        public Operand(int value) {
+            this.value = value;
+        }
+        
+        public static Operand from(String s) {
+            int num = Integer.parseInt(s);
+            return new Operand(num);
+        }
+        
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Operand.class.getSimpleName() + "[", "]")
+                    .add("value=" + value)
+                    .toString();
+        }
+    }
 }
+

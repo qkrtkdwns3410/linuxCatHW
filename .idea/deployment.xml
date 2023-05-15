@@ -51,6 +51,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="미즘 개발==운영">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="서버확인">
         <serverdata>
           <mappings>
@@ -66,6 +73,20 @@
         </serverdata>
       </paths>
       <paths name="서울디지털재단 개발서버">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="암사 개발">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="용산시설 개발서버">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />

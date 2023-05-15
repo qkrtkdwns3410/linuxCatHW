@@ -38,8 +38,6 @@ public class PathAndInput {
         this.input = input;
         this.path = path;
     }
-    
-    
     //newOutputStream 대신에 (일단 파일 덮기 쓰기 전략도 고려해야하는게 맞지만..)
     // Main 문에서 Path를 호출한 경우 만약 해당 위치에 파일이 존재하지 않는 상태로
     // 다른 API 에서 호출된다면 NoSuchFileException 이 발생합니다.
