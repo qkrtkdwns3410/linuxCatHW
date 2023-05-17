@@ -5,7 +5,7 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException {
         
-        final String OUPUT_INPUT_FILENAME = "input.txt";
+        final String OUPUT_INPUT_FILENAME = "dkaldkjqew kjasdll djasdad ad";
         
         try {
             String word = "HelloWorld";

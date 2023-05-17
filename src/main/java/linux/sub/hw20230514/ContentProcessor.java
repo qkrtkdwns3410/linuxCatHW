@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 
 public class ContentProcessor {
     
@@ -21,6 +22,10 @@ public class ContentProcessor {
         }
         if (!Files.exists(fileLocation)) {
             Files.createFile(fileLocation);
+        } else {
+            String fileName = fileLocation.getFileName().toString();
+            String errMsg = MessageFormat.format("이미 {0} 파일이 존재합니다", fileName);
+            throw new IllegalStateException(errMsg);
         }
         this.path = fileLocation;
     }
