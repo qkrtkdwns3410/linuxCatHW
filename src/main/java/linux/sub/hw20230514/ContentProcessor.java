@@ -5,7 +5,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 public class ContentProcessor {
     
@@ -23,14 +25,13 @@ public class ContentProcessor {
         if (!Files.exists(fileLocation)) {
             Files.createFile(fileLocation);
         } else {
-            String fileName = fileLocation.getFileName().toString();
-            String errMsg = MessageFormat.format("이미 {0} 파일이 존재합니다", fileName);
+            String errMsg = MessageFormat.format("이미 {0} 파일이 존재합니다", getFilenameOrNull(fileLocation));
             throw new IllegalStateException(errMsg);
         }
         this.path = fileLocation;
     }
     
-    public void writeStringContent(String writableContent) {
+    public void writeStringContent(String writableContent) { // word는 write한 곳에서만 사용한다.
         byte[] bStr = writableContent.getBytes(DEFAULT_CHARSET);
         try (BufferedOutputStream bos = openBufferedFileOutputStream(path)) {
             bos.write(bStr);
@@ -71,8 +72,19 @@ public class ContentProcessor {
         return new BufferedOutputStream(fileOutputStream, BUFFER_SIZE);
     }
     
+    /**
+     * path 로의 변환만을 수행한다.
+     * @param fileLocation
+     * @return ContentProcessor
+     * @throws IOException
+     */
     public static ContentProcessor from(String fileLocation) throws IOException {
-        Path paths = Path.of(fileLocation);
+        Path paths = Paths.get(fileLocation);
         return new ContentProcessor(paths);
+    }
+    
+    public Optional<String> getFilenameOrNull(Path path) {
+        String filename = path.getFileName().toString();
+        return Optional.of(filename);
     }
 }
