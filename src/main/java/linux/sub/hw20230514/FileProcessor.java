@@ -9,16 +9,34 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Optional;
 
-public class ContentProcessor {
+public class FileProcessor {
     
+    /*
+    Path 등을 기본 멤버변수로 가집니다.
+    기존Input 의 경우 말씀하신대로 그냥 클래스로 감싸서 포장을 했을 뿐 아무 의미없는 맹목적인 코딩이였습니다.
+    
+    그래서 해당 Input 안의 String HelloWorld의 경우 인자로 받는걸로 변경했습니다.
+    
+    입력컨텍스트에서 전달된 값이
+    * */
+    
+    /**
+     * 버퍼사이즈
+     */
     private final int BUFFER_SIZE = 1024;
+    /**
+     * 바이트 처리단위
+     */
     private final int BUFFER_BYTE_SIZE = 4;
     
+    /**
+     * 기
+     */
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final Path path;
     
     
-    public ContentProcessor(Path fileLocation) throws IOException {
+    public FileProcessor(Path fileLocation) throws IOException {
         if (fileLocation == null) {
             throw new IllegalArgumentException("null은 허용되지 않습니다");
         }
@@ -74,17 +92,24 @@ public class ContentProcessor {
     
     /**
      * path 로의 변환만을 수행한다.
+     *
      * @param fileLocation
      * @return ContentProcessor
      * @throws IOException
      */
-    public static ContentProcessor from(String fileLocation) throws IOException {
+    public static FileProcessor from(String fileLocation) throws IOException {
         Path paths = Paths.get(fileLocation);
-        return new ContentProcessor(paths);
+        return new FileProcessor(paths);
     }
     
+    /**
+     * Path에 대한 파일 이름을 가져옵니다.
+     *
+     * @param path
+     * @return
+     */
     public Optional<String> getFilenameOrNull(Path path) {
         String filename = path.getFileName().toString();
-        return Optional.of(filename);
+        return Optional.ofNullable(filename);
     }
 }
