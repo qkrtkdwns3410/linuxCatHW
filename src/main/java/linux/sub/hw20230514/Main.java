@@ -11,7 +11,7 @@ public class Main {
             String word = "HelloWorld";
             
             ContentProcessor contentProcessor = ContentProcessor.from(OUPUT_INPUT_FILENAME);
-            contentProcessor.writeStringContent(word);//word 는 객체의 동작에 영향이 없음
+            contentProcessor.writeStringContent(word);//word 는 객체의 동작에 영향이 없음 알아서 null인 경우 에러가 터질것
             String returnedResult = contentProcessor.readFileContent();
             
             System.out.println(returnedResult);
