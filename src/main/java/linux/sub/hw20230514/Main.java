@@ -10,9 +10,9 @@ public class Main {
         try {
             String word = "HelloWorld";
             
-            FileWriteAndRetrieveProcessor fileWriteAndRetrieveProcessor = FileWriteAndRetrieveProcessor.from(OUPUT_INPUT_FILENAME);
-            fileWriteAndRetrieveProcessor.writeStringContents(word);
-            String contentsInnerFile = fileWriteAndRetrieveProcessor.retrieveInnerFileContents();
+            WriteFileAndRetrieveContentProcessor writeFileAndRetrieveContentProcessor = WriteFileAndRetrieveContentProcessor.from(OUPUT_INPUT_FILENAME);
+            writeFileAndRetrieveContentProcessor.writeStringContents(word);
+            String contentsInnerFile = writeFileAndRetrieveContentProcessor.retrieveInnerFileContents();
             
             System.out.println(contentsInnerFile);
             

@@ -3,35 +3,37 @@ package linux.sub.hw20230514;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
-public class FileWriteAndRetrieveProcessor {
-    
+import static java.nio.file.Files.newInputStream;
+import static java.nio.file.Files.newOutputStream;
+import static java.nio.file.Paths.get;
+
+public class WriteFileAndRetrieveContentProcessor {
+
     private final int BUFFER_SIZE = 1024;
     private final int BUFFER_BYTE_SIZE = 4;
-    
+
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final Path path;
-    
-    
-    public FileWriteAndRetrieveProcessor(Path fileLocation) {
+
+
+    public WriteFileAndRetrieveContentProcessor(Path fileLocation) {
         if (fileLocation == null) {
             throw new IllegalArgumentException("null은 허용되지 않습니다");
         }
         this.path = fileLocation;
     }
-    
+
     public void writeStringContents(String writableContent) {
-        byte[] bStr = writableContent.getBytes(DEFAULT_CHARSET);
+        byte[] contentBytes = writableContent.getBytes(DEFAULT_CHARSET);
         try (BufferedOutputStream bos = openBufferedFileOutputStream(path)) {
-            bos.write(bStr);
+            bos.write(contentBytes);
         } catch (RuntimeException | IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     public String retrieveInnerFileContents() {
         StringBuilder sb = new StringBuilder();
         try (BufferedInputStream bis = openBufferedFileInputStream(path)) {
@@ -42,39 +44,29 @@ public class FileWriteAndRetrieveProcessor {
                 if (eol) {
                     break;
                 }
-                String s = new String(buffer, 0, len, DEFAULT_CHARSET);
-                sb.append(s);
+                String decodedString = new String(buffer, 0, len, DEFAULT_CHARSET);
+                sb.append(decodedString);
             }
         } catch (RuntimeException | IOException e) {
             e.printStackTrace();
         }
-        
+
         return sb.toString();
     }
-    
-    public BufferedInputStream openBufferedFileInputStream(Path path) {
-        InputStream fileInputStream = null;
-        try {
-            fileInputStream = Files.newInputStream(path);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+    private BufferedInputStream openBufferedFileInputStream(Path path) throws IOException {
+        InputStream fileInputStream = newInputStream(path);
         return new BufferedInputStream(fileInputStream, BUFFER_SIZE);
     }
-    
-    public BufferedOutputStream openBufferedFileOutputStream(Path path) {
-        OutputStream fileOutputStream = null;
-        try {
-            fileOutputStream = Files.newOutputStream(path);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+    private BufferedOutputStream openBufferedFileOutputStream(Path path) throws IOException {
+        OutputStream fileOutputStream = newOutputStream(path);
         return new BufferedOutputStream(fileOutputStream, BUFFER_SIZE);
     }
-    
-    public static FileWriteAndRetrieveProcessor from(String fileLocation) {
-        Path paths = Paths.get(fileLocation);
-        return new FileWriteAndRetrieveProcessor(paths);
+
+    public static WriteFileAndRetrieveContentProcessor from(String fileLocation) {
+        Path paths = get(fileLocation);
+        return new WriteFileAndRetrieveContentProcessor(paths);
     }
-    
+
 }
