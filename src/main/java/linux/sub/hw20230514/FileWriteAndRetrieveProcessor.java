@@ -6,10 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.MessageFormat;
-import java.util.Optional;
 
-public class ContentProcessor {
+public class FileWriteAndRetrieveProcessor {
     
     private final int BUFFER_SIZE = 1024;
     private final int BUFFER_BYTE_SIZE = 4;
@@ -18,33 +16,25 @@ public class ContentProcessor {
     private final Path path;
     
     
-    public ContentProcessor(Path fileLocation) throws IOException {
+    public FileWriteAndRetrieveProcessor(Path fileLocation) {
         if (fileLocation == null) {
             throw new IllegalArgumentException("null은 허용되지 않습니다");
-        }
-        if (!Files.exists(fileLocation)) {
-            Files.createFile(fileLocation);
-        } else {
-            String errMsg = MessageFormat.format("이미 {0} 파일이 존재합니다", getFilenameOrNull(fileLocation));
-            throw new IllegalStateException(errMsg);
         }
         this.path = fileLocation;
     }
     
-    public void writeStringContent(String writableContent) { // word는 write한 곳에서만 사용한다.
+    public void writeStringContents(String writableContent) {
         byte[] bStr = writableContent.getBytes(DEFAULT_CHARSET);
         try (BufferedOutputStream bos = openBufferedFileOutputStream(path)) {
             bos.write(bStr);
         } catch (RuntimeException | IOException e) {
             e.printStackTrace();
         }
-        
     }
     
-    public String readFileContent() throws IOException {
+    public String retrieveInnerFileContents() {
         StringBuilder sb = new StringBuilder();
         try (BufferedInputStream bis = openBufferedFileInputStream(path)) {
-            //스트리밍이란
             byte[] buffer = new byte[BUFFER_BYTE_SIZE];
             while (true) {
                 int len = bis.read(buffer);
@@ -62,29 +52,29 @@ public class ContentProcessor {
         return sb.toString();
     }
     
-    public BufferedInputStream openBufferedFileInputStream(Path path) throws IOException {
-        InputStream fileInputStream = Files.newInputStream(path);
+    public BufferedInputStream openBufferedFileInputStream(Path path) {
+        InputStream fileInputStream = null;
+        try {
+            fileInputStream = Files.newInputStream(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return new BufferedInputStream(fileInputStream, BUFFER_SIZE);
     }
     
-    public BufferedOutputStream openBufferedFileOutputStream(Path path) throws IOException {
-        OutputStream fileOutputStream = Files.newOutputStream(path);
+    public BufferedOutputStream openBufferedFileOutputStream(Path path) {
+        OutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = Files.newOutputStream(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return new BufferedOutputStream(fileOutputStream, BUFFER_SIZE);
     }
     
-    /**
-     * path 로의 변환만을 수행한다.
-     * @param fileLocation
-     * @return ContentProcessor
-     * @throws IOException
-     */
-    public static ContentProcessor from(String fileLocation) throws IOException {
+    public static FileWriteAndRetrieveProcessor from(String fileLocation) {
         Path paths = Paths.get(fileLocation);
-        return new ContentProcessor(paths);
+        return new FileWriteAndRetrieveProcessor(paths);
     }
     
-    public Optional<String> getFilenameOrNull(Path path) {
-        String filename = path.getFileName().toString();
-        return Optional.of(filename);
-    }
 }
