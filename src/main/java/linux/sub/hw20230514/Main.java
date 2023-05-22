@@ -10,16 +10,21 @@ public class Main {
         try {
             String word = "HelloWorld";
             
-            FileWriteAndRetrieveProcessor fileWriteAndRetrieveProcessor = FileWriteAndRetrieveProcessor.from(OUPUT_INPUT_FILENAME);
-            fileWriteAndRetrieveProcessor.writeStringContents(word);
-            String contentsInnerFile = fileWriteAndRetrieveProcessor.retrieveInnerFileContents();
-            
-            System.out.println(contentsInnerFile);
+            //대분류 파일 쓴다, 읽는다. =>
+            // 생성자
             
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
         
+    }
+    
+    public static class FileReader {
+    
+    }
+    
+    public static class FileWriter {
+    
     }
     
 }
