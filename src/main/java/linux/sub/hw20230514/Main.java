@@ -1,8 +1,6 @@
 package linux.sub.hw20230514;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -20,6 +18,9 @@ public class Main {
             // -> 현재 요구사항 자체는 HelloWorld 라고 고정이 되어 있는 경우는 솔직히 생성자로 받아도 상관은 없을거같긴하다.
             // -> 하지만 생성자에 쓸내용까지 넣는건 뭔가 가독성이 좋지 않을거같다.
             // write() 함수에 무슨 내용을 쓸건지 인자로 들어가지 않는다면, **얘가 뭘 쓰는거야? 라고 생각할거같다**
+            Writer writer = Writer.fromFilePath(OUPUT_INPUT_FILENAME);
+            writer.streamingContent(word);
+            Reader reader = Reader.fromFilepath(OUPUT_INPUT_FILENAME);
             
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -31,10 +32,13 @@ public class Main {
         InputStream inputStream;
         
         public Reader(InputStream inputStream) {
+            if (inputStream == null) {
+                throw new IllegalArgumentException("스트림이 닫혀있습니다");
+            }
             this.inputStream = inputStream;
         }
         
-        public String streamingString(String word) {
+        public String streamingInputStream() {
             byte[] buffer = new byte[1024];
             while (true) {
                 try {
@@ -67,11 +71,30 @@ public class Main {
     }
     
     public static class Writer {
+        private OutputStream outputStream;
         
-        public static Writer from(String filepath) {
-            return new Writer();
+        public Writer(OutputStream outputStream) {
+            this.outputStream = outputStream;
         }
         
+        public static Writer fromFilePath(String filepath) {
+            OutputStream fileOutputSteam = openFileOutputStream(filepath);
+            return new Writer(fileOutputSteam);
+        }
+        
+        private static OutputStream openFileOutputStream(String filepath) {
+            OutputStream fileOutputStream = null;
+            try {
+                fileOutputStream = new FileOutputStream(filepath);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            return fileOutputStream;
+        }
+        
+        public void streamingContent(String word) {
+        
+        }
     }
     
 }
