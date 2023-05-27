@@ -41,7 +41,6 @@ public class Main {
             this.guessNumber = guessNumber;
         }
         
-        public
     }
     
     public static class BaseGamePlayer {

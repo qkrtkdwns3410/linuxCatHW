@@ -113,14 +113,6 @@ public class Main {
             }
         }
         
-        private void writeBytes(byte[] wordBytes, int offset, int writableLenth) {
-            try {
-                outputStream.write(wordBytes, offset, writableLenth);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        
         private static OutputStream openFileOutputStream(String filepath) {
             OutputStream fileOutputStream = null;
             try {
