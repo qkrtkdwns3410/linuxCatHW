@@ -16,32 +16,30 @@ import java.nio.charset.StandardCharsets;
  */
 public class Main2 {
     public static void main(String[] args) throws IOException {
-        String word = "laksdjlasdj klajldjd jalskjadljdljasdljas";
+        final int BUFFER_SIZE = 8024;
         
-        byte[] bword = word.getBytes(StandardCharsets.UTF_8);
-        
-        InputStream is = new ByteArrayInputStream(bword);
-        byte[] buffer = new byte[8];
-        
-        while (true) {
-            int len = is.read(buffer);
-            if (len == -1) {
-                break;
+        try (InputStreamReader isr = new InputStreamReader(new FileInputStream("123.txt"), StandardCharsets.UTF_8);
+             OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("sample.txt", true), StandardCharsets.UTF_8)) {
+            StringBuilder sb = new StringBuilder();
+            char[] buffer = new char[BUFFER_SIZE];
+            while (true) {
+                int len = isr.read(buffer);
+                if (len == -1) {
+                    break;
+                }
+                sb.append(buffer, 0, len);
+                if (sb.length() >= BUFFER_SIZE) {
+                    osw.write(sb.toString());
+                    sb.setLength(0);
+                }
             }
-            
-            String str = new String(buffer, 0, len, StandardCharsets.UTF_8);
-            System.out.println(str);
+            if (sb.length() > 0) {
+                osw.write(sb.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         
-        InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        char[] cBuffer = new char[2];
-        while (true) {
-            int len = isr.read(cBuffer);
-            if (len == -1) {
-                break;
-            }
-            String str = new String(cBuffer, 0, len);
-            System.out.println(str);
-        }
+        
     }
 }
