@@ -2,6 +2,7 @@ package linux.sub.hw20230514;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -19,35 +20,61 @@ public class Main {
         // -> 하지만 생성자에 쓸내용까지 넣는건 뭔가 가독성이 좋지 않을거같다.
         // write() 함수에 무슨 내용을 쓸건지 인자로 들어가지 않는다면, **얘가 뭘 쓰는거야? 라고 생각할거같다**
         Reader wordContent = Reader.fromString(word);
-        
-        Writer fileWriter = Writer.fromFilePath(OUTPUT_INPUT_FILENAME);
-        fileWriter.streamingFrom(wordContent);
+        try (OutputStreamWriter isr = new OutputStreamWriter(new FileOutputStream(OUTPUT_INPUT_FILENAME), StandardCharsets.UTF_8)) {
+            wordContent.streaming(str -> {
+                writeToFile(isr, str);
+            });
+        }
+
         
         Reader fileContent = Reader.fromFilepath(OUTPUT_INPUT_FILENAME);
-        
-        Writer consoleWriter = Writer.fromConsole();
-        consoleWriter.streamingFrom(fileContent);
+        fileContent.streaming(System.out::print);
+    }
+    
+    private static void writeToFile(OutputStreamWriter isr, String str) {
+        try {
+            isr.write(str);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     public static class Reader {
-        private final InputStream inputStream;
+        private final InputStreamReader isr;
+        private final int BYTE_SIZE = 1024;
         
-        public Reader(InputStream inputStream) {
-            if (inputStream == null) {
+        public Reader(InputStreamReader inputStreamReader) {
+            if (inputStreamReader == null) {
                 throw new IllegalArgumentException("스트림이 닫혀있습니다");
             }
-            this.inputStream = inputStream;
+            this.isr = inputStreamReader;
         }
         
         public static Reader fromFilepath(String filepath) {
-            InputStream fileInputStream = openFileInputStream(filepath);
-            return new Reader(fileInputStream);
+            InputStreamReader isr = new InputStreamReader(openFileInputStream(filepath), StandardCharsets.UTF_8);
+            return new Reader(isr);
         }
         
         public static Reader fromString(String word) {
             byte[] words = word.getBytes(StandardCharsets.UTF_8);
-            return new Reader(new ByteArrayInputStream(words));
-            
+            InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(words), StandardCharsets.UTF_8);
+            return new Reader(isr);
+        }
+        
+        public void streaming(Consumer<String> cp) {
+            char[] chars = new char[BYTE_SIZE];
+            while (true) {
+                try {
+                    int len = isr.read(chars);
+                    if (len == -1) {
+                        break;
+                    }
+                    String str = new String(chars, 0, len);
+                    cp.accept(str);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         
         public static InputStream openFileInputStream(String filePath) {
@@ -63,7 +90,6 @@ public class Main {
     
     public static class Writer {
         private final OutputStream outputStream;
-        private final int BYTE_SIZE = 1024;
         
         //FM 메서드외에는 클래스 생성자에 접근할수없다.
         private Writer(OutputStream outputStream) {
@@ -73,11 +99,6 @@ public class Main {
             this.outputStream = outputStream;
         }
         
-        public static Writer fromFilePath(String filepath) {
-            OutputStream fileOutputSteam = openFileOutputStream(filepath);
-            return new Writer(fileOutputSteam);
-        }
-        
         public static Writer fromConsole() {
             OutputStream consoleOutputStream = openConsoleOutputStream();
             return new Writer(consoleOutputStream);
@@ -85,32 +106,6 @@ public class Main {
         
         private static OutputStream openConsoleOutputStream() {
             return System.out;
-        }
-        
-        public void streamingFrom(Reader reader) {
-            InputStream inputStream = reader.inputStream;
-            byte[] bytes = new byte[BYTE_SIZE];
-            while (true) {
-                try {
-                    int len = inputStream.read(bytes);
-                    if (len == -1) {
-                        break;
-                    }
-                    outputStream.write(bytes, 0, len);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    clearOutputStream();
-                }
-            }
-        }
-        
-        private void clearOutputStream() {
-            try {
-                outputStream.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         
         private static OutputStream openFileOutputStream(String filepath) {
