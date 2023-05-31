@@ -1,7 +1,10 @@
 package linux.java.numberBaseball;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.*;
+import java.io.InputStreamReader;
+
+import static linux.java.numberBaseball.Message.INPUT_NUMBER_STRING;
 
 /**
  * packageName    : linux.java.numberBaseball
@@ -16,79 +19,32 @@ import java.util.*;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        Balls randomBalls = Balls.generateRandomBalls();
-        BaseBallGame baseBallGame = new BaseBallGame();
-        while (true) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         
+        Balls randomBalls = Balls.generateRandomBalls();
+        BaseBallGame.start(randomBalls);
+        while (true) {
+            System.out.print(INPUT_NUMBER_STRING);
+            String inputString = br.readLine();
         }
     }
     
     public static class BaseBallGame {
         private final BaseBallPlayer baseBallPlayer;
         private final BaseBallReFeree baseBallReFeree;
-        private final Balls balls;
+        private final Balls randomBalls;
         
-        public BaseBallGame(BaseBallPlayer baseBallPlayer, BaseBallReFeree baseBallReFeree, Balls balls) {
+        private BaseBallGame(BaseBallPlayer baseBallPlayer, BaseBallReFeree baseBallReFeree, Balls randomBalls) {
             this.baseBallPlayer = baseBallPlayer;
             this.baseBallReFeree = baseBallReFeree;
-            this.balls = balls;
+            this.randomBalls = randomBalls;
         }
         
-    }
-    
-    public static class Balls {
-        private final int[] numbers;
-        
-        private Balls(int[] numbers) {
-            this.numbers = numbers;
+        public static BaseBallGame start(Balls randomBalls) {
+            BaseBallPlayer baseBallPlayer = new BaseBallPlayer();
+            BaseBallReFeree baseBallReFeree = new BaseBallReFeree();
+            return new BaseBallGame(baseBallPlayer, baseBallReFeree, randomBalls);
         }
-        
-        public static Balls generateRandomBalls() {
-            int[] randomNumbers = generateRandomNumber();
-            System.out.println("randomNumber = " + Arrays.toString(randomNumbers));
-            return new Balls(randomNumbers);
-        }
-        
-        private static int[] generateRandomNumber() {
-            Set<Integer> randomSet = new LinkedHashSet<>();
-            Random random = new Random();
-            int numberCount = 0;
-            while (numberCount < 3) {
-                int randomNumber = random.nextInt(9) + 1;
-                boolean notDulicatedNumber = !randomSet.contains(randomNumber);
-                if (notDulicatedNumber) {
-                    randomSet.add(randomNumber);
-                    numberCount++;
-                }
-            }
-            int[] randomInts = randomSet.stream().mapToInt(Integer::intValue).toArray();
-            return randomInts;
-        }
-        
-        public int[] getNumbers() {
-            return numbers;
-        }
-        
-        @Override
-        public String toString() {
-            return new StringJoiner(", ", Balls.class.getSimpleName() + "[", "]")
-                    .add("numbers=" + Arrays.toString(numbers))
-                    .toString();
-        }
-        
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Balls balls = (Balls) o;
-            return Arrays.equals(numbers, balls.numbers);
-        }
-        
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(numbers);
-        }
-        
     }
     
     public static class BaseBallPlayer {
@@ -97,14 +53,7 @@ public class Main {
     
     public static class BaseBallReFeree {
         
-        private final Balls randomBall;
-        
-        public BaseBallReFeree(Balls randomBall) {
-            this.randomBall = randomBall;
-        }
-        
         public boolean scoring(int[] userGuessNumbers) {
-            int[] randomNumber = randomBall.getNumbers();
             
             return true;
         }
