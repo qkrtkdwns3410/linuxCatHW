@@ -16,8 +16,11 @@ import java.util.*;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        Balls randomBalls = Balls.generateBalls();
+        Balls randomBalls = Balls.generateRandomBalls();
+        BaseBallGame baseBallGame = new BaseBallGame();
+        while (true) {
         
+        }
     }
     
     public static class BaseBallGame {
@@ -36,11 +39,11 @@ public class Main {
     public static class Balls {
         private final int[] numbers;
         
-        public Balls(int[] numbers) {
+        private Balls(int[] numbers) {
             this.numbers = numbers;
         }
         
-        public static Balls generateBalls() {
+        public static Balls generateRandomBalls() {
             int[] randomNumbers = generateRandomNumber();
             System.out.println("randomNumber = " + Arrays.toString(randomNumbers));
             return new Balls(randomNumbers);
@@ -62,6 +65,10 @@ public class Main {
             return randomInts;
         }
         
+        public int[] getNumbers() {
+            return numbers;
+        }
+        
         @Override
         public String toString() {
             return new StringJoiner(", ", Balls.class.getSimpleName() + "[", "]")
@@ -81,6 +88,7 @@ public class Main {
         public int hashCode() {
             return Arrays.hashCode(numbers);
         }
+        
     }
     
     public static class BaseBallPlayer {
@@ -88,6 +96,17 @@ public class Main {
     }
     
     public static class BaseBallReFeree {
-    
+        
+        private final Balls randomBall;
+        
+        public BaseBallReFeree(Balls randomBall) {
+            this.randomBall = randomBall;
+        }
+        
+        public boolean scoring(int[] userGuessNumbers) {
+            int[] randomNumber = randomBall.getNumbers();
+            
+            return true;
+        }
     }
 }
