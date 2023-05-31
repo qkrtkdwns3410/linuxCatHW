@@ -1,9 +1,7 @@
 package linux.java.numberBaseball;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * packageName    : linux.java.numberBaseball
@@ -18,7 +16,8 @@ import java.util.Set;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        BaseBallGame.start();
+        Balls randomBalls = Balls.generateBalls();
+        
     }
     
     public static class BaseBallGame {
@@ -35,18 +34,19 @@ public class Main {
     }
     
     public static class Balls {
-        private final int numbers;
+        private final int[] numbers;
         
-        public Balls(int numbers) {
+        public Balls(int[] numbers) {
             this.numbers = numbers;
         }
         
         public static Balls generateBalls() {
-            int randomNumber = generateRandomNumber();
-            return new Balls(randomNumber);
+            int[] randomNumbers = generateRandomNumber();
+            System.out.println("randomNumber = " + Arrays.toString(randomNumbers));
+            return new Balls(randomNumbers);
         }
         
-        public static int generateRandomNumber() {
+        private static int[] generateRandomNumber() {
             Set<Integer> randomSet = new LinkedHashSet<>();
             Random random = new Random();
             int numberCount = 0;
@@ -58,7 +58,28 @@ public class Main {
                     numberCount++;
                 }
             }
-            return randomSet.stream().
+            int[] randomInts = randomSet.stream().mapToInt(Integer::intValue).toArray();
+            return randomInts;
+        }
+        
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Balls.class.getSimpleName() + "[", "]")
+                    .add("numbers=" + Arrays.toString(numbers))
+                    .toString();
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Balls balls = (Balls) o;
+            return Arrays.equals(numbers, balls.numbers);
+        }
+        
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(numbers);
         }
     }
     
