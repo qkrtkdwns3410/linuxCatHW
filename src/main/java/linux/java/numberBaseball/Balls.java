@@ -1,5 +1,6 @@
 package linux.java.numberBaseball;
 
+import javax.swing.text.StyleContext;
 import java.util.*;
 
 /**
@@ -17,6 +18,14 @@ public class Balls {
     private final int[] numbers;
     
     private Balls(int[] numbers) {
+        long sameCount = Arrays.stream(numbers).distinct().count();
+        boolean isDupNumber = sameCount < numbers.length;
+        if (isDupNumber) {
+            throw new IllegalArgumentException("중복된 BALL 값이 존재합니다");
+        }
+        if (numbers.length != 3) {
+            throw new IllegalArgumentException("야구공이 3개가 주어져야합니다.");
+        }
         this.numbers = numbers;
     }
     
