@@ -16,30 +16,26 @@ import java.nio.charset.StandardCharsets;
  */
 public class Main2 {
     public static void main(String[] args) throws IOException {
-        final int BUFFER_SIZE = 8024;
-        
-        try (InputStreamReader isr = new InputStreamReader(new FileInputStream("123.txt"), StandardCharsets.UTF_8);
-             OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("sample.txt", true), StandardCharsets.UTF_8)) {
-            StringBuilder sb = new StringBuilder();
-            char[] buffer = new char[BUFFER_SIZE];
-            while (true) {
-                int len = isr.read(buffer);
-                if (len == -1) {
-                    break;
-                }
-                sb.append(buffer, 0, len);
-                if (sb.length() >= BUFFER_SIZE) {
-                    osw.write(sb.toString());
-                    sb.setLength(0);
-                }
+        //현재는 사람이 이해할 수 있는 문자열 형태이다.
+        String word = "akdklsa lajdals dljals";
+        byte[] bword = word.getBytes(StandardCharsets.UTF_8);
+        /*
+         인코딩 형식으로 UTF-8 로 인코딩을 수행할것이며, 향후에도 올바른 문자열로 출력하려면 동일한 디코딩 방식을 유지해야함을 알 수 있다
+         InputStreamReader 를 사용하여 인코딩과 디코딩의 책임을 일원화해보도록 한다.
+         */
+        InputStream is = new ByteArrayInputStream(bword);
+        Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+        char[] chars = new char[1024];
+        while (true) {
+            int len = isr.read(chars);
+            if (len == -1) {
+                break;
             }
-            if (sb.length() > 0) {
-                osw.write(sb.toString());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            String str = new String(chars, 0, len);
+            
+            //디코딩시 별도 디코딩타입의 선언이 필요없이 출력이 가능하다, 왜냐고?
+            // 이미 디코딩된 값을 char 배열에 담기때문이다.
+            System.out.print(str);
         }
-        
-        
     }
 }
