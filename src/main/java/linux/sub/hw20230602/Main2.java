@@ -28,8 +28,6 @@ public class Main2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try (MyResource myResource = new MyResource();) {
-        }
     }
     
     public void print() {
@@ -38,7 +36,7 @@ public class Main2 {
     public static class MyResource implements Closeable {
         
         @Override
-        public void close() {
+        public void close() throws IOException {
         
         }
     }
