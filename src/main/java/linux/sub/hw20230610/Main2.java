@@ -45,7 +45,6 @@ public class Main2 {
                 InputStreamReader isr = new InputStreamReader(bis, "EUC-KR");// 디코딩
                 
                 //논리 EUC-KR 디코딩
-                
                 OutputStream os = new FileOutputStream("utf-8.txt");
                 BufferedOutputStream bos = new BufferedOutputStream(os, 8192);
                 OutputStreamWriter osw = new OutputStreamWriter(bos, StandardCharsets.UTF_8); // 인코딩
