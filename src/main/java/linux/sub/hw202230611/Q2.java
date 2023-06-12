@@ -3,17 +3,6 @@ package linux.sub.hw202230611;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-/**
- * packageName    : linux.sub.hw202230611
- * fileName       : Q2
- * author         : ipeac
- * date           : 2023-06-11
- * description    :
- * ===========================================================
- * DATE              AUTHOR             NOTE
- * -----------------------------------------------------------
- * 2023-06-11        ipeac       최초 생성
- */
 public class Q2 {
     public static void main(String[] args) throws IOException {
         /*
@@ -22,18 +11,31 @@ public class Q2 {
         */
         String word = "HelloWorld";
         byte[] bword = word.getBytes(StandardCharsets.UTF_8);
-        BufferedOutputStream bos1 = new BufferedOutputStream(new FileOutputStream("test1.txt"), 8192);
-        BufferedOutputStream bos2 = new BufferedOutputStream(new FileOutputStream("test2.txt"), 8192);
-        BufferedOutputStream bos3 = new BufferedOutputStream(new FileOutputStream("test3.txt"), 8192);
         
-        BufferedOutputStream[] outputStreams = new BufferedOutputStream[]{
-                bos1, bos2, bos3
-        };
-        for (BufferedOutputStream bufferedOutputStream : outputStreams) {
-            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(bword), 8192);
-            streamingToFile(bis, bufferedOutputStream);
+        
+        try (
+                BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(bword), 8192);
+                BufferedOutputStream bos1 = new BufferedOutputStream(new FileOutputStream("test1.txt"), 8192);
+                BufferedOutputStream bos2 = new BufferedOutputStream(new FileOutputStream("test2.txt"), 8192);
+                BufferedOutputStream bos3 = new BufferedOutputStream(new FileOutputStream("test3.txt"), 8192);
+        ) {
+            BufferedOutputStream[] outputStreams = new BufferedOutputStream[]{
+                    bos1, bos2, bos3
+            };
+            byte[] bytes = new byte[512];
+            while (true) {
+                int len = bis.read(bytes);
+                if (len == -1) {
+                    break;
+                }
+                for (BufferedOutputStream bos : outputStreams) {
+                    bos.write(bytes, 0, len);
+                }
+            }
+            for (BufferedOutputStream bos : outputStreams) {
+                bos.flush();
+            }
         }
-        
         BufferedInputStream bisfile1 = new BufferedInputStream(new FileInputStream("test1.txt"), 8192);
         BufferedInputStream bisfile2 = new BufferedInputStream(new FileInputStream("test2.txt"), 8192);
         BufferedInputStream bisfile3 = new BufferedInputStream(new FileInputStream("test3.txt"), 8192);
@@ -59,7 +61,7 @@ public class Q2 {
                 if (len == -1) {
                     break;
                 }
-                //이진데이터
+                // 이진데이터
                 fileOutput.write(bytes, 0, len);
             }
             fileOutput.flush();
