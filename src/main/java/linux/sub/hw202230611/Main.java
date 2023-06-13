@@ -1,8 +1,5 @@
 package linux.sub.hw202230611;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * packageName    : linux.sub.hw202230611
  * fileName       : List
@@ -26,13 +23,18 @@ public class Main {
             customArrayList.add("e");
         }
         CustomArrayList<String> customArrayList2 = new CustomArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 100; i++) {
             customArrayList2.add("a");
         }
+        System.out.println("customArrayList = " + customArrayList);
+        System.out.println("customArrayList2 = " + customArrayList2);
         customArrayList.addAll(customArrayList2);
+        
         System.out.println("customArrayList.size() = " + customArrayList.size());
         System.out.println("customArrayList = " + customArrayList);
+        
         System.out.println("customArrayList2.size() = " + customArrayList2.size());
         System.out.println("customArrayList2 = " + customArrayList2);
+        
     }
 }
