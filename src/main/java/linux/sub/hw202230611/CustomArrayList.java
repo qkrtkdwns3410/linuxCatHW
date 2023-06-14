@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 public class CustomArrayList<T> {
     private static final Object[] DEFAULT_ELEMENTS = {};
     private static final int DEFAULT_MAX_CAPACITY = 10;
-    private static Object[] elements;
+    private Object[] elements;
     private final int MAX_ARRAY_SIZE = 2100000000;
     private int innerSize = 0;
     
@@ -36,6 +36,19 @@ public class CustomArrayList<T> {
         return true;
     }
     
+    public T delete(Integer index) {
+        checkIndex(index, innerSize);
+        T removedValue = (T) elements[index];
+        
+        return removedValue;
+    }
+    
+    private void checkIndex(int index, int arrSize) {
+        if (index < 0 || index > arrSize) {
+            throw new IndexOutOfBoundsException("올바른 INDEX가 아닙니다. 0 ~ 인덱스의 사이즈까지로 지정해주세요");
+        }
+    }
+    
     public boolean addAll(CustomArrayList<T> target) {
         Object[] paramObjects = target.toObjects();
         ensureCapacity(target.size());// 배열의 안전한 삽입을 위해 공간을 확보
@@ -60,7 +73,7 @@ public class CustomArrayList<T> {
     }
     
     private void increaseSize() {
-        int increasedSize = elements.length == 0 ? DEFAULT_MAX_CAPACITY : (int) (elements.length * (1.5));
+        int increasedSize = elements.length == 0 ? DEFAULT_MAX_CAPACITY : elements.length << 1;
         elements = Arrays.copyOf(elements, increasedSize);
     }
     
@@ -74,6 +87,19 @@ public class CustomArrayList<T> {
     
     private Object[] toObjects() {
         return elements;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomArrayList<?> that = (CustomArrayList<?>) o;
+        return Arrays.equals(elements, that.elements);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(elements);
     }
     
     @Override

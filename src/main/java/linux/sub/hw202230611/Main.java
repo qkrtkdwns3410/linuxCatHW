@@ -29,6 +29,8 @@ public class Main {
         for (int i = 0; i < 5; i++) {
             customArrayList2.add("a");
         }
+        
+        customArrayList2.delete(5);
         customArrayList.addAll(customArrayList2);
         System.out.println("customArrayList.size() = " + customArrayList.size());
         System.out.println("customArrayList = " + customArrayList);
