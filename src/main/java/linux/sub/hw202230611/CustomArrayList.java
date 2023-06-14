@@ -29,7 +29,7 @@ public class CustomArrayList<T> {
     
     public boolean add(T element) {
         if (elements.length == innerSize) {
-            increaseSize();
+            ensureCapacity(innerSize + 1);
         }
         elements[innerSize] = element;
         innerSize++;
@@ -51,8 +51,9 @@ public class CustomArrayList<T> {
     
     public boolean addAll(CustomArrayList<T> target) {
         Object[] paramObjects = target.toObjects();
-        ensureCapacity(target.size());// 배열의 안전한 삽입을 위해 공간을 확보
-        System.arraycopy(elements, 0, paramObjects, innerSize, target.size());
+        int wishSize = innerSize + target.size();
+        ensureCapacity(wishSize);// 배열의 안전한 삽입을 위해 공간을 확보
+        System.arraycopy(paramObjects, 0, elements, innerSize, target.size());
         innerSize += target.size();
         return true;
     }
@@ -62,7 +63,7 @@ public class CustomArrayList<T> {
         checkMaxCapacity(wishSize);
         if (notEnoughSpace) {
             increaseSize();
-            ensureCapacity(elements.length);
+            ensureCapacity(wishSize);
         }
     }
     
