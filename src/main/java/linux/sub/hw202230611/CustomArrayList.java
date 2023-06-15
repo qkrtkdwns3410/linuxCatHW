@@ -2,9 +2,11 @@ package linux.sub.hw202230611;
 
 import javax.swing.text.AbstractDocument;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class CustomArrayList<T> {
@@ -56,7 +58,15 @@ public class CustomArrayList<T> {
     }
     
     private void remove(T value) {
-        innerSize--;
+        try {
+            int index = IntStream.range(0, innerSize).filter(i -> Objects.equals(elements[i], value)).findFirst()
+                                 .orElseThrow(()->new NoSuchElementException("삭제할 대상을 찾을 수 없습니다."));
+            delete(index);
+            innerSize--;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+
     }
 
     
@@ -97,10 +107,6 @@ public class CustomArrayList<T> {
     
     public int size() {
         return innerSize;
-    }
-    
-    public boolean checkMaxCapacity() {
-        return true;
     }
     
     private Object[] toObjects() {

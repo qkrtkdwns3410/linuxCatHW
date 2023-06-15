@@ -31,7 +31,7 @@ public class Main {
         }
         customArrayList2.add("k");
         System.out.println("customArrayList2 = " + customArrayList2);
-        customArrayList2.delete(0);
+        customArrayList2.delete("m");
         System.out.println("customArrayList2 = " + customArrayList2);
     }
 }

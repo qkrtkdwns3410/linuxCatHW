@@ -28,13 +28,13 @@ public class MainSocket {
         
         BufferedReader br = new BufferedReader(isr, 8192);
         
-        /*while (true) {
+        while (true) {
             String line = br.readLine();
             if (line == null) {
                 break;
             }
             System.out.println(line);
-        }*/
+        }
         String content = "<h1>Hello world</h1>";
         OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(socket.getOutputStream(), 8192), StandardCharsets.UTF_8);
         BufferedWriter bw = new BufferedWriter(osw, 8192);
