@@ -1,5 +1,6 @@
 package linux.sub.hw202230611;
 
+import javax.swing.text.AbstractDocument;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -39,9 +40,25 @@ public class CustomArrayList<T> {
     public T delete(Integer index) {
         checkIndex(index, innerSize);
         T removedValue = (T) elements[index];
-        
+        remove(index);
         return removedValue;
     }
+    
+    private void remove(Integer index) {
+        int numMoved = innerSize - index + 1;
+        System.arraycopy(elements, index + 1, elements, 0, numMoved);
+        innerSize--;
+    }
+    
+    public boolean delete(T target) {
+        remove(target);
+        return true;
+    }
+    
+    private void remove(T value) {
+        innerSize--;
+    }
+
     
     private void checkIndex(int index, int arrSize) {
         if (index < 0 || index > arrSize) {
