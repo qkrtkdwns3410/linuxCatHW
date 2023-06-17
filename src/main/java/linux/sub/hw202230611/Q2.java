@@ -47,14 +47,15 @@ public class Q2 {
     }
     
     public static void concatFiles(BufferedInputStream[] bufferedInputStreams, String fileName) throws IOException {
-        for (BufferedInputStream bis : bufferedInputStreams) {
-            BufferedOutputStream fileBos = new BufferedOutputStream(new FileOutputStream(fileName, true), 8192);
-            streamingToFile(bis, fileBos);
+        try (BufferedOutputStream fileBos = new BufferedOutputStream(new FileOutputStream(fileName), 8192)) {
+            for (BufferedInputStream bis : bufferedInputStreams) {
+                streamingToFile(bis, fileBos);
+            }
         }
     }
     
     public static void streamingToFile(BufferedInputStream bis, BufferedOutputStream fileOutput) {
-        try (bis; fileOutput) {
+        try  {
             byte[] bytes = new byte[512];
             while (true) {
                 int len = bis.read(bytes);
