@@ -1,6 +1,7 @@
 package linux.sub.hw20230610;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +19,9 @@ import java.nio.charset.StandardCharsets;
  */
 public class MainSocket {
     public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(7777);
+        //서버 소켓을 생성하는 부분입니다,
+        InetAddress addr = InetAddress.getByName("192.168.1.1");
+        ServerSocket serverSocket = new ServerSocket(7777, 50, addr);
         System.out.println("대기");
         Socket socket = serverSocket.accept();
         System.out.println("연결완료");
