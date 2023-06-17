@@ -1,9 +1,12 @@
 package linux.sub.hw202230611;
 
+import javax.swing.text.AbstractDocument;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class CustomArrayList<T> {
@@ -36,6 +39,43 @@ public class CustomArrayList<T> {
         return true;
     }
     
+    public T delete(Integer index) {
+        checkIndex(index, innerSize);
+        T removedValue = (T) elements[index];
+        remove(index);
+        return removedValue;
+    }
+    
+    private void remove(Integer index) {
+        int numMoved = innerSize - index + 1;
+        System.arraycopy(elements, index + 1, elements, 0, numMoved);
+        innerSize--;
+    }
+    
+    public boolean delete(T target) {
+        remove(target);
+        return true;
+    }
+    
+    private void remove(T value) {
+        try {
+            int index = IntStream.range(0, innerSize).filter(i -> Objects.equals(elements[i], value)).findFirst()
+                                 .orElseThrow(()->new NoSuchElementException("삭제할 대상을 찾을 수 없습니다."));
+            delete(index);
+            innerSize--;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    
+    private void checkIndex(int index, int arrSize) {
+        if (index < 0 || index > arrSize) {
+            throw new IndexOutOfBoundsException("올바른 INDEX가 아닙니다. 0 ~ 인덱스의 사이즈까지로 지정해주세요");
+        }
+    }
+    
     public boolean addAll(CustomArrayList<T> target) {
         Object[] paramObjects = target.toObjects();
         int wishSize = innerSize + target.size();
@@ -61,7 +101,7 @@ public class CustomArrayList<T> {
     }
     
     private void increaseSize() {
-        int increasedSize = elements.length == 0 ? DEFAULT_MAX_CAPACITY : (int) (elements.length * (1.5));
+        int increasedSize = elements.length == 0 ? DEFAULT_MAX_CAPACITY : elements.length << 1;
         elements = Arrays.copyOf(elements, increasedSize);
     }
     
@@ -69,12 +109,21 @@ public class CustomArrayList<T> {
         return innerSize;
     }
     
-    public boolean checkMaxCapacity() {
-        return true;
-    }
-    
     private Object[] toObjects() {
         return elements;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomArrayList<?> that = (CustomArrayList<?>) o;
+        return Arrays.equals(elements, that.elements);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(elements);
     }
     
     @Override
