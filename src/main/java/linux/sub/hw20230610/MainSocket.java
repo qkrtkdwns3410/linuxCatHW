@@ -1,6 +1,9 @@
 package linux.sub.hw20230610;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -37,7 +40,7 @@ public class MainSocket {
             System.out.println("method = " + method);
             System.out.println("requestUri = " + requestUri);
             System.out.println("httpVersion = " + httpVersion);
-            
+/*
             InputStream is =
             
             
@@ -52,7 +55,7 @@ public class MainSocket {
             bw.newLine();
             bw.newLine();
             bw.write(content);
-            bw.flush();
+            bw.flush();*/
             
         }
     }
