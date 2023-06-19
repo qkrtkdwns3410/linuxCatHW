@@ -1,15 +1,12 @@
 package linux.sub.hw202230611;
 
-import javax.swing.text.AbstractDocument;
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class CustomArrayList<T> {
+public class CustomArrayList<T> implements Iterable<T> {
+    
     private static final Object[] DEFAULT_ELEMENTS = {};
     private static final int DEFAULT_MAX_CAPACITY = 10;
     private Object[] elements;
@@ -60,15 +57,14 @@ public class CustomArrayList<T> {
     private void remove(T value) {
         try {
             int index = IntStream.range(0, innerSize).filter(i -> Objects.equals(elements[i], value)).findFirst()
-                                 .orElseThrow(()->new NoSuchElementException("삭제할 대상을 찾을 수 없습니다."));
+                                 .orElseThrow(() -> new NoSuchElementException("삭제할 대상을 찾을 수 없습니다."));
             delete(index);
             innerSize--;
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
-
     }
-
+    
     
     private void checkIndex(int index, int arrSize) {
         if (index < 0 || index > arrSize) {
@@ -83,6 +79,33 @@ public class CustomArrayList<T> {
         System.arraycopy(paramObjects, 0, elements, innerSize, target.size());
         innerSize += target.size();
         return true;
+    }
+    
+    public T set(int index, T element) {
+        checkIndex(index, innerSize);
+        T oldValue = (T) elements[index];
+        elements[index] = element;
+        return oldValue;
+    }
+    
+    public boolean contains(T element) {
+        for (Object o : elements) {
+            boolean isSame = Objects.equals(o, element);
+            if (isSame) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void shuffle() {
+        Random random = new Random();
+        for (int i = 0; i < innerSize; i++) {
+            int j = random.nextInt(innerSize - i) + i;
+            T temp = (T) elements[j];
+            elements[j] = elements[i];
+            elements[i] = temp;
+        }
     }
     
     private void ensureCapacity(int wishSize) {
@@ -111,6 +134,26 @@ public class CustomArrayList<T> {
     
     private Object[] toObjects() {
         return elements;
+    }
+    
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            int index = 0;
+            
+            @Override
+            public boolean hasNext() {
+                return index < innerSize;
+            }
+            
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException("다음 요소가 존재하지 않습니다");
+                }
+                return (T) elements[index++];
+            }
+        };
     }
     
     @Override

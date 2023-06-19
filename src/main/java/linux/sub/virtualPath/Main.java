@@ -17,17 +17,24 @@ import java.nio.file.Paths;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        String userInput = "C:\\Users\\ipeac\\IdeaProjects\\linuxCatHW\\sample.txt";
+        // String userInput = "C:\\Users\\ipeac\\IdeaProjects\\linuxCatHW\\sample.txt";
+        String userInput = "/../../sample.txt";
         System.out.println("userInput = " + userInput);
+        
         String baseRoot = System.getProperty("user.dir");
         System.out.println("baseRoot = " + baseRoot);
-        if (!userInput.startsWith(baseRoot)) {
-            String absolutePath = baseRoot + userInput;
-            Path normalizedPath = Paths.get(absolutePath).normalize();
-            System.out.println("normalizedPath = " + normalizedPath);
-            if (!normalizedPath.startsWith(baseRoot)) {
-                throw new IllegalStateException("올바른 경로가 아닙니다");
-            }
+        //상대경로라면 ->
+        String absolutePath;
+        if (userInput.startsWith(baseRoot)) {
+            absolutePath = userInput;
+        } else {
+            absolutePath = baseRoot + userInput;
+        }
+        Path normalizedPath = Paths.get(absolutePath).normalize();
+        System.out.println("normalizedPath = " + normalizedPath);
+        
+        if (!normalizedPath.startsWith(baseRoot)) {
+            throw new IllegalStateException("올바른 경로가 아닙니다");
         }
 
         OutputStream consoleOs = new BufferedOutputStream(System.out, 8192);
@@ -45,4 +52,5 @@ public class Main {
             e.printStackTrace();
         }
     }
+
 }
