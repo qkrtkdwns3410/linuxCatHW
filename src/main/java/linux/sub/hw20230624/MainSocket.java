@@ -32,16 +32,17 @@ public class MainSocket {
                     for (byte aByte : bytes) {
                         if (aByte == CARRIAGE_RETURN || aByte == LINE_FEED) {
                             sequencialCnt++;
-                            if (sequencialCnt == SPACE_ENTER_CNT) {
-                                isSequenceEnter = true;
-                                break;
-                            }
+
                         } else {
                             sequencialCnt = 0;
                         }
                     }
-                    
+                    if (sequencialCnt == SPACE_ENTER_CNT) {
+                        isSequenceEnter = true;
+                        break;
+                    }
                     if (len == -1) {
+                        System.out.println("종료");
                         break;
                     }
                     os.write(bytes, 0, len);
@@ -53,6 +54,7 @@ public class MainSocket {
                         bw.newLine();
                         bw.newLine();
                         bw.write("<h2>Hello World</h2>");
+                        break;
                     }
                     os.flush();
                     bw.flush();

@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 public class CustomArrayList<T> implements Iterable<T> {
     
     private static final Object[] DEFAULT_ELEMENTS = {};
-    private static final int DEFAULT_MAX_CAPACITY = 10;
+    private static final int DEFAULT_CAPACITY = 10;
     private Object[] elements;
     private final int MAX_ARRAY_SIZE = 2100000000;
     private int innerSize = 0;
@@ -125,7 +125,7 @@ public class CustomArrayList<T> implements Iterable<T> {
     }
     
     private void increaseSize() {
-        int increasedSize = elements.length == 0 ? DEFAULT_MAX_CAPACITY : elements.length << 1;
+        int increasedSize = elements.length == 0 ? DEFAULT_CAPACITY : elements.length << 1;
         elements = Arrays.copyOf(elements, increasedSize);
     }
     
