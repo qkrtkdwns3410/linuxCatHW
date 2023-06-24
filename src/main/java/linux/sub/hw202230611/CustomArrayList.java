@@ -109,8 +109,9 @@ public class CustomArrayList<T> implements Iterable<T> {
     }
     
     private void ensureCapacity(int wishSize) {
-        boolean notEnoughSpace = elements.length < wishSize;
         checkMaxCapacity(wishSize);
+        
+        boolean notEnoughSpace = elements.length < wishSize;
         if (notEnoughSpace) {
             increaseSize();
             ensureCapacity(wishSize);
