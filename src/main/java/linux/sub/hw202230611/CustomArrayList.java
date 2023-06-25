@@ -128,7 +128,6 @@ public class CustomArrayList<T> implements Iterable<T> {
             copiedArr[j] = copiedArr[i];
             copiedArr[i] = temp;
         }
-        //만약 기존 배열과 전부 동일한 경우 다시 셔플 수행
         if (Arrays.equals(elements, copiedArr)) {
             shuffle();
         }
