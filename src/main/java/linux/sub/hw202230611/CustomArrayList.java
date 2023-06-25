@@ -119,7 +119,6 @@ public class CustomArrayList<T> implements Iterable<T> {
     }
     
     public void shuffle() {
-        boolean isSame = false;
         T[]copiedArr = (T[]) Arrays.copyOf(elements, elementsIndex);
         Random random = new Random();
         for (int i = 0; i < copiedArr.length; i++) {
