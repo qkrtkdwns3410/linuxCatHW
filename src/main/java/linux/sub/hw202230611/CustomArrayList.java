@@ -119,12 +119,18 @@ public class CustomArrayList<T> implements Iterable<T> {
     }
     
     public void shuffle() {
+        boolean isSame = false;
+        T[]copiedArr = (T[]) Arrays.copyOf(elements, elementsIndex);
         Random random = new Random();
-        for (int i = 0; i < elementsIndex; i++) {
-            int j = random.nextInt(elementsIndex - i) + i;
-            T temp = (T) elements[j];
-            elements[j] = elements[i];
-            elements[i] = temp;
+        for (int i = 0; i < copiedArr.length; i++) {
+            int j = random.nextInt(copiedArr.length);
+            T temp = (T) copiedArr[j];
+            copiedArr[j] = copiedArr[i];
+            copiedArr[i] = temp;
+        }
+        //만약 기존 배열과 전부 동일한 경우 다시 셔플 수행
+        if (Arrays.equals(elements, copiedArr)) {
+            shuffle();
         }
     }
     
@@ -147,8 +153,8 @@ public class CustomArrayList<T> implements Iterable<T> {
         }
     }
     
-    private void checkMaxCapacity(int size) {
-        if (MAX_ARRAY_SIZE < size) {
+    private void checkMaxCapacity(int requiredSize) {
+        if (MAX_ARRAY_SIZE < requiredSize) {
             throw new IllegalStateException("배열의 허용공간을 초과했습니다.");
         }
     }
