@@ -1,23 +1,31 @@
 package linux.sub.hw202230611;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
+
+import static java.lang.Math.ceil;
+import static java.lang.Math.log;
 
 public class CustomArrayList<T> implements Iterable<T> {
     
     private static final Object[] DEFAULT_ELEMENTS = {};
     private static final int DEFAULT_CAPACITY = 10;
     private Object[] elements;
-    private final int MAX_ARRAY_SIZE = 2100000000;
-    private int innerSize = 0;
+    //!MAX_ARRAY_SIZE -> 가독성을 위해 만단위 숫자그룹핑
+    private final int MAX_ARRAY_SIZE = 21_0000_0000;
+    //!innerSize -> index로 변수명 변경
+    private int elementsIndex = 0;
     
-    public CustomArrayList() {
-        this(0);
+    public static <T> CustomArrayList<T> from() {
+        //! 기본용량을 10으로 고정했습니다.
+        return new CustomArrayList<>(DEFAULT_CAPACITY);
     }
     
-    public CustomArrayList(int capacity) {
+    public static <T> CustomArrayList<T> from(int capacity) {
+        return new CustomArrayList<>(capacity);
+    }
+    
+    private CustomArrayList(int capacity) {
         if (capacity == 0) {
             elements = DEFAULT_ELEMENTS;
         } else if (capacity > 0 && capacity < MAX_ARRAY_SIZE) {
@@ -28,113 +36,130 @@ public class CustomArrayList<T> implements Iterable<T> {
     }
     
     public boolean add(T element) {
-        if (elements.length == innerSize) {
-            ensureCapacity(innerSize + 1);
+        if (elements.length == elementsIndex) {
+            ensureCapacity();
         }
-        elements[innerSize] = element;
-        innerSize++;
+        elements[elementsIndex] = element;
+        elementsIndex++;
         return true;
     }
     
     public T delete(Integer index) {
-        checkIndex(index, innerSize);
+        checkIndex(index);
         T removedValue = (T) elements[index];
         remove(index);
+        elementsIndex--;
         return removedValue;
     }
     
+    //! 객체의 사이즈제어의 경우 public 에서만 제어하도록 변경함
+    //?객체의 삭제되어야하는 부분을 다시 조정했습니다.
     private void remove(Integer index) {
-        int numMoved = innerSize - index + 1;
-        System.arraycopy(elements, index + 1, elements, 0, numMoved);
-        innerSize--;
+        int backIndex = elementsIndex - index - 1;
+        System.arraycopy(elements, index + 1, elements, index, backIndex);
     }
     
     public boolean delete(T target) {
         remove(target);
+        elementsIndex--;
         return true;
     }
     
     private void remove(T value) {
         try {
-            int index = IntStream.range(0, innerSize).filter(i -> Objects.equals(elements[i], value)).findFirst()
-                                 .orElseThrow(() -> new NoSuchElementException("삭제할 대상을 찾을 수 없습니다."));
-            delete(index);
-            innerSize--;
+            int findIndex = indexOf(value);
+            remove(findIndex);
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
     }
     
+    //! indexOf 를 별도 public 메서드로 생성함
+    public int indexOf(T value) {
+        OptionalInt findOptionalFirst = IntStream.range(0, elementsIndex)
+                                                 .filter(i -> Objects.equals(elements[i], value))
+                                                 .findFirst();
+        if (findOptionalFirst.isPresent()) {
+            return findOptionalFirst.getAsInt();
+        }
+        return -1;
+    }
     
-    private void checkIndex(int index, int arrSize) {
-        if (index < 0 || index > arrSize) {
+    
+    private void checkIndex(int index) {
+        if (index < 0 || index > elements.length) {
             throw new IndexOutOfBoundsException("올바른 INDEX가 아닙니다. 0 ~ 인덱스의 사이즈까지로 지정해주세요");
         }
     }
     
+    //! 현재 객체와 대상 target 객체와 명확한 구분을 위해 this 구분자 추가, 
+    //! target 객체 자체를 불러오도록 설정함
     public boolean addAll(CustomArrayList<T> target) {
-        Object[] paramObjects = target.toObjects();
-        int wishSize = innerSize + target.size();
+        int wishSize = this.elementsIndex + target.size();
         ensureCapacity(wishSize);// 배열의 안전한 삽입을 위해 공간을 확보
-        System.arraycopy(paramObjects, 0, elements, innerSize, target.size());
-        innerSize += target.size();
+        System.arraycopy(target.elements, 0, this.elements, this.elementsIndex, target.size());
+        this.elementsIndex += target.size();
         return true;
     }
     
     public T set(int index, T element) {
-        checkIndex(index, innerSize);
+        checkIndex(index);
         T oldValue = (T) elements[index];
         elements[index] = element;
         return oldValue;
     }
     
+    //! contains 에 indexOf 활용으로 해당 값이 있는지 없는지 확인
     public boolean contains(T element) {
-        for (Object o : elements) {
-            boolean isSame = Objects.equals(o, element);
-            if (isSame) {
-                return true;
-            }
+        int index = indexOf(element);
+        if (index != -1) {
+            return true;
         }
         return false;
     }
     
     public void shuffle() {
         Random random = new Random();
-        for (int i = 0; i < innerSize; i++) {
-            int j = random.nextInt(innerSize - i) + i;
+        for (int i = 0; i < elementsIndex; i++) {
+            int j = random.nextInt(elementsIndex - i) + i;
             T temp = (T) elements[j];
             elements[j] = elements[i];
             elements[i] = temp;
         }
     }
     
-    private void ensureCapacity(int wishSize) {
-        checkMaxCapacity(wishSize);
-        
-        boolean notEnoughSpace = elements.length < wishSize;
-        if (notEnoughSpace) {
-            increaseSize();
-            ensureCapacity(wishSize);
+    //! 내부 재귀를 돌지 않도록 설정 -> 계산으로 몇번 increase 해야하는지 산출
+    //! zeroDiv 문제때문에 0 인경우 기본값으로 설정해줌
+    private void ensureCapacity() {
+        ensureCapacity(elementsIndex + 1);
+    }
+    
+    private void ensureCapacity(double wishSize) {
+        increaseEmptyElement();
+        int divNum = (int) ceil(log(wishSize / elements.length) / log(2));
+        checkMaxCapacity(divNum);
+        increaseLength(divNum);
+    }
+    
+    private void increaseEmptyElement() {
+        if (elements.length == 0) {
+            increaseLength(DEFAULT_CAPACITY);
         }
     }
     
-    private void checkMaxCapacity(int wishSize) {
-        if (MAX_ARRAY_SIZE < wishSize) {
+    private void checkMaxCapacity(int size) {
+        if (MAX_ARRAY_SIZE < size) {
             throw new IllegalStateException("배열의 허용공간을 초과했습니다.");
         }
     }
     
-    private void increaseSize() {
-        int increasedSize = elements.length == 0 ? DEFAULT_CAPACITY : elements.length << 1;
+    private void increaseLength(int squareNumber) {
+        int increasedSize = elements.length == 0 ? DEFAULT_CAPACITY : elements.length << squareNumber;
         elements = Arrays.copyOf(elements, increasedSize);
     }
     
     public int size() {
-        return innerSize;
-    }
-    
-    private Object[] toObjects() {
-        return elements;
+        return elementsIndex;
     }
     
     @Override
@@ -144,7 +169,7 @@ public class CustomArrayList<T> implements Iterable<T> {
             
             @Override
             public boolean hasNext() {
-                return index < innerSize;
+                return index < elementsIndex;
             }
             
             @Override
@@ -173,8 +198,8 @@ public class CustomArrayList<T> implements Iterable<T> {
     @Override
     public String toString() {
         return new StringJoiner(", ", CustomArrayList.class.getSimpleName() + "[", "]")
-                .add("elements=" + Stream.of(elements).limit(size()).map(Objects::toString)
-                                         .collect(Collectors.joining(", ", CustomArrayList.class.getSimpleName() + "[", "]")))
+                .add("elements=" + Arrays.toString(Arrays.stream(elements).limit(elementsIndex).toArray()))
+                .add("elementsSize=" + elementsIndex)
                 .toString();
     }
 }

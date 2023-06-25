@@ -1,5 +1,9 @@
 package linux.sub.hw202230611;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * packageName    : linux.sub.hw202230611
  * fileName       : List
@@ -13,26 +17,20 @@ package linux.sub.hw202230611;
  */
 public class Main {
     public static void main(String[] args) {
-        // List<String> arr = new ArrayList<>();
-        // for (int i = 0; i < 1000000000; i++) {
-        //     arr.add("e");
-        // }
-        // System.out.println("arr = " + arr);
-        CustomArrayList<String> customArrayList = new CustomArrayList<>();
+        List<String> arr = new ArrayList<>();
+        CustomArrayList<String> customArrayList = CustomArrayList.from();
         for (int i = 0; i < 2; i++) {
             customArrayList.add("e");
         }
-        CustomArrayList<String> customArrayList2 = new CustomArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        CustomArrayList<String> customArrayList2 = CustomArrayList.from();
+        for (int i = 0; i < 10_0000; i++) {
             customArrayList2.add("a");
         }
-        customArrayList2.add("k");
-        System.out.println("customArrayList2 = " + customArrayList2);
-        CustomArrayList<String> same = new CustomArrayList<>();
-        for (String s : customArrayList2) {
-            System.out.println("s = " + s);
-        }
-        System.out.println("customArrayList2 = " + customArrayList2);
-        
+        customArrayList2.add("J");
+        customArrayList2.add("a");
+        customArrayList2.add("b");
+        customArrayList2.add("c");
+        customArrayList2.add("Je");
+        customArrayList.addAll(customArrayList2);
     }
 }
