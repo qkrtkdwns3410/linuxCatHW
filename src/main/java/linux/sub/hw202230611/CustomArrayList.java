@@ -74,7 +74,7 @@ public class CustomArrayList<T> implements Iterable<T> {
         }
     }
     
-    //! indexOf 를 별도 public 메서드로 생성함
+    //! indexOf 를 별도 public 메서드로 생성함 안쓸거면 그냥 private 으로 두려고했는데, indexOf 는 arraylist 에도 public으로 있으니까..
     public int indexOf(T value) {
         OptionalInt findOptionalFirst = IntStream.range(0, elementsIndex)
                                                  .filter(i -> Objects.equals(elements[i], value))
@@ -118,6 +118,7 @@ public class CustomArrayList<T> implements Iterable<T> {
         return false;
     }
     
+    //! 셔플은 다 바꾸고나서 확인하고 다시 셔플을 돌리는게 맞다고 생각되어 재귀를 돌렸습니다.
     public void shuffle() {
         T[]copiedArr = (T[]) Arrays.copyOf(elements, elementsIndex);
         Random random = new Random();
@@ -138,16 +139,16 @@ public class CustomArrayList<T> implements Iterable<T> {
         ensureCapacity(elementsIndex + 1);
     }
     
+    //! elements.length 가 0인 경우  java.lang.ArithmeticException: / by zero 발생으로 기본 공간은 확보하도록 설정
     private void ensureCapacity(double wishSize) {
         increaseEmptyElement();
         int divNum = (int) ceil(log(wishSize / elements.length) / log(2));
-        checkMaxCapacity(divNum);
         increaseLength(divNum);
     }
     
     private void increaseEmptyElement() {
         if (elements.length == 0) {
-            increaseLength(DEFAULT_CAPACITY);
+            increaseLength(1);
         }
     }
     
@@ -157,7 +158,11 @@ public class CustomArrayList<T> implements Iterable<T> {
         }
     }
     
+    //? 배열의 공간을 2배 이상으로 늘리기위해 별도로 만들었습니다. -> 그런데.. 무지성으로 늘리게되면 배열의 최대 크기를 초과할수도있어서
+    // ? 본 메서드는 항상 max 값을 초과하는지 전에 확인해야합니다.
+    // ! 라고 생각했는데 -> 그냥 private 에서 체크해주면 되는거아녀? 라고 생각해서 private 안에 max값을 확인하도록 변경하여 가독성을 늘렸습니다.
     private void increaseLength(int squareNumber) {
+        checkMaxCapacity(squareNumber);
         int increasedSize = elements.length == 0 ? DEFAULT_CAPACITY : elements.length << squareNumber;
         elements = Arrays.copyOf(elements, increasedSize);
     }
