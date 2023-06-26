@@ -24,19 +24,8 @@ public class Main {
         for (int i = 0; i < 2; i++) {
             customArrayList.add("e");
         }
-        CustomArrayList<String> customArrayList2 = CustomArrayList.from();
-        for (int i = 0; i < 100; i++) {
-            customArrayList2.add(String.valueOf(i));
-        }
-        customArrayList2.add("J");
-        customArrayList2.add("a");
-        customArrayList2.add("b");
-        customArrayList2.add("c");
-        customArrayList2.add("Je");
-        customArrayList.addAll(customArrayList2);
-        for (int i = 0; i < 100; i++) {
-            customArrayList.shuffle();
-            System.out.println("customArrayList = " + customArrayList);
-        }
+        customArrayList.add("a");
+        customArrayList.add("b");
+        customArrayList.add("k");
     }
 }

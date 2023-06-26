@@ -2,6 +2,7 @@ package linux.sub.hw202230611;
 
 import java.util.*;
 import java.util.stream.IntStream;
+import java.util.zip.InflaterInputStream;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.log;
@@ -33,6 +34,11 @@ public class CustomArrayList<T> implements Iterable<T> {
         } else {
             throw new IllegalArgumentException("초깃값은 0 ~ 21억 이하의 정수만 가능합니다. ");
         }
+    }
+    
+    public T get(int index) {
+        checkIndex(index);
+        return (T) this.elements[index];
     }
     
     public boolean add(T element) {
