@@ -3,7 +3,10 @@ package linux.sub.hw202230611;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,22 +36,28 @@ class CustomArrayListTest {
     
     @Test
     void deleteIndex() {
-        //인덱스 체크
+        // 인덱스 체크
         assertThrows(IndexOutOfBoundsException.class, () -> {
             customArrayList.delete(-1);
-        },"-1 인덱스가 지워지면 안됨");
+        }, "-1 인덱스가 지워지면 안됨");
         customArrayList.delete(0);
         List<String> arr = List.of("e", "a", "b", "k");
         IntStream.range(0, customArrayList.size())
-                 .forEach(i -> assertEquals(customArrayList.get(i), arr.get(i),"배열이 동일합니다."));
+                 .forEach(i -> assertEquals(customArrayList.get(i), arr.get(i), "배열이 동일합니다."));
     }
     
     @Test
-    void deleteEle() {
+    void deleteElement() {
+        assertFalse(customArrayList.delete("asdkhasdkjads"));
+        customArrayList.delete("e");
+        customArrayList.delete("e");
+        assertFalse(customArrayList.delete("e"));
     }
     
     @Test
     void indexOf() {
+        assertEquals(0, customArrayList.indexOf("e"), "첫값 = e");
+        assertEquals(-1,customArrayList.indexOf("asdhkjahkj"),"없는  값은 -1 반환");
     }
     
     @Test
@@ -65,6 +74,14 @@ class CustomArrayListTest {
     
     @Test
     void shuffle() {
+        List<String> crr = new ArrayList<>();
+        for (String s : customArrayList) {
+            crr.add(s);
+        }
+        assertNotEquals(customArrayList.shuffle(), crr.toArray());
+        assertNotEquals(customArrayList.shuffle(), crr.toArray());
+        assertNotEquals(customArrayList.shuffle(), crr.toArray());
+        assertNotEquals(customArrayList.shuffle(), crr.toArray());
     }
     
     @Test

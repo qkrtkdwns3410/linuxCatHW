@@ -18,14 +18,21 @@ import java.util.List;
  */
 public class Main {
     public static void main(String[] args) {
-        List<String> arr = new ArrayList<>();
-        Collections.shuffle(arr);
-        CustomArrayList<String> customArrayList = CustomArrayList.from();
-        for (int i = 0; i < 2; i++) {
-            customArrayList.add("e");
-        }
-        customArrayList.add("a");
-        customArrayList.add("b");
-        customArrayList.add("k");
+        int[] arr = {
+                10, 11, 12
+        };
+        System.out.println(remove(arr, 0));
+        System.out.println(remove(arr, 5));
     }
+
+    public static Integer remove(int[] arr, int index) {
+        int arrLength = arr.length;
+        if (arrLength <= index || 0 > index) {
+            return null;
+        }
+        int oldValue = arr[index];
+        arr[index] = -1;
+        return oldValue;
+    }
+
 }

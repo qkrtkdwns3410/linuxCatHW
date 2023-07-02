@@ -2,12 +2,13 @@ package linux.sub.hw202230611;
 
 import java.util.*;
 import java.util.stream.IntStream;
-import java.util.zip.InflaterInputStream;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.log;
 
 public class CustomArrayList<T> implements Iterable<T> {
+    
+    private static final RuntimeException INDEX_OUT_OF_EXCEPTION = new IndexOutOfBoundsException("올바른 INDEX가 아닙니다. 0 ~ 인덱스의 사이즈까지로 지정해주세요");
     
     private static final Object[] DEFAULT_ELEMENTS = {};
     private static final int DEFAULT_CAPACITY = 10;
@@ -15,7 +16,7 @@ public class CustomArrayList<T> implements Iterable<T> {
     //!MAX_ARRAY_SIZE -> 가독성을 위해 만단위 숫자그룹핑
     private final int MAX_ARRAY_SIZE = 21_0000_0000;
     //!innerSize -> index로 변수명 변경
-    private int elementsIndex = 0;
+    private int elementsLength = 0;
     
     public static <T> CustomArrayList<T> from() {
         //! 기본용량을 10으로 고정했습니다.
@@ -42,47 +43,84 @@ public class CustomArrayList<T> implements Iterable<T> {
     }
     
     public boolean add(T element) {
-        if (elements.length == elementsIndex) {
+        if (elements.length == elementsLength) {
             ensureCapacity();
         }
-        elements[elementsIndex] = element;
-        elementsIndex++;
+        elements[elementsLength] = element;
+        elementsLength++;
         return true;
     }
     
-    public T delete(Integer index) {
-        checkIndex(index);
+    public T delete(int index) {
+/*         checkIndex(index);
         T removedValue = (T) elements[index];
         remove(index);
-        elementsIndex--;
-        return removedValue;
+        elementsLength--; */
+        // return removedValue;
+        
+        T oldValue = doDelete(index);
+        if (oldValue == null) {
+            throw INDEX_OUT_OF_EXCEPTION;
+        }
+        return oldValue;
     }
     
     //! 객체의 사이즈제어의 경우 public 에서만 제어하도록 변경함
     //?객체의 삭제되어야하는 부분을 다시 조정했습니다.
-    private void remove(Integer index) {
-        int backIndex = elementsIndex - index - 1;
+    private boolean remove(int index) {
+        int backIndex = elementsLength - index - 1;
         System.arraycopy(elements, index + 1, elements, index, backIndex);
-    }
-    
-    public boolean delete(T target) {
-        remove(target);
-        elementsIndex--;
         return true;
     }
     
-    private void remove(T value) {
+    private T doDelete(int index) {
+        if (elementsLength <= index || 0 > index) {
+            return null;
+        }
+        T oldValue = (T) elements[index];
+        int remainLength = this.elementsLength - (index + 1);
+        System.arraycopy(elements, index + 1, elements, index, remainLength);
+        elementsLength--;
+        return oldValue;
+    }
+    
+    public boolean delete(T target) {
+        int findIndex = indexOf(target);
+        /*for (int i = 0; i < elementsLength; i++) {
+            if (Objects.equals(target, elements[i])) {
+                findIndex = i;
+                break;
+            }
+        }*/
+        if (findIndex == -1) {
+            return false;
+        }
+        T deletedValue = doDelete(findIndex);
+        if (deletedValue == null) {
+            return false;
+        }
+        
+        return true;
+/*         boolean removed = remove(target);
+        elementsLength--;
+        return removed; */
+    }
+    
+    private boolean remove(T value) {
+        boolean removed = false;
         try {
             int findIndex = indexOf(value);
-            remove(findIndex);
+            removed = remove(findIndex);
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
+        return removed;
     }
+    
     
     //! indexOf 를 별도 public 메서드로 생성함 안쓸거면 그냥 private 으로 두려고했는데, indexOf 는 arraylist 에도 public으로 있으니까..
     public int indexOf(T value) {
-        OptionalInt findOptionalFirst = IntStream.range(0, elementsIndex)
+        OptionalInt findOptionalFirst = IntStream.range(0, elementsLength)
                                                  .filter(i -> Objects.equals(elements[i], value))
                                                  .findFirst();
         if (findOptionalFirst.isPresent()) {
@@ -101,10 +139,10 @@ public class CustomArrayList<T> implements Iterable<T> {
     //! 현재 객체와 대상 target 객체와 명확한 구분을 위해 this 구분자 추가, 
     //! target 객체 자체를 불러오도록 설정함
     public boolean addAll(CustomArrayList<T> target) {
-        int wishSize = this.elementsIndex + target.size();
+        int wishSize = this.elementsLength + target.size();
         ensureCapacity(wishSize);// 배열의 안전한 삽입을 위해 공간을 확보
-        System.arraycopy(target.elements, 0, this.elements, this.elementsIndex, target.size());
-        this.elementsIndex += target.size();
+        System.arraycopy(target.elements, 0, this.elements, this.elementsLength, target.size());
+        this.elementsLength += target.size();
         return true;
     }
     
@@ -125,8 +163,8 @@ public class CustomArrayList<T> implements Iterable<T> {
     }
     
     //! 셔플은 다 바꾸고나서 확인하고 다시 셔플을 돌리는게 맞다고 생각되어 재귀를 돌렸습니다.
-    public void shuffle() {
-        T[]copiedArr = (T[]) Arrays.copyOf(elements, elementsIndex);
+    public T[] shuffle() {
+        T[] copiedArr = (T[]) Arrays.copyOf(elements, elementsLength);
         Random random = new Random();
         for (int i = 0; i < copiedArr.length; i++) {
             int j = random.nextInt(copiedArr.length);
@@ -137,12 +175,13 @@ public class CustomArrayList<T> implements Iterable<T> {
         if (Arrays.equals(elements, copiedArr)) {
             shuffle();
         }
+        return copiedArr;
     }
     
     //! 내부 재귀를 돌지 않도록 설정 -> 계산으로 몇번 increase 해야하는지 산출
     //! zeroDiv 문제때문에 0 인경우 기본값으로 설정해줌
     private void ensureCapacity() {
-        ensureCapacity(elementsIndex + 1);
+        ensureCapacity(elementsLength + 1);
     }
     
     //! elements.length 가 0인 경우  java.lang.ArithmeticException: / by zero 발생으로 기본 공간은 확보하도록 설정
@@ -174,7 +213,7 @@ public class CustomArrayList<T> implements Iterable<T> {
     }
     
     public int size() {
-        return elementsIndex;
+        return elementsLength;
     }
     
     @Override
@@ -184,7 +223,7 @@ public class CustomArrayList<T> implements Iterable<T> {
             
             @Override
             public boolean hasNext() {
-                return index < elementsIndex;
+                return index < elementsLength;
             }
             
             @Override
@@ -213,8 +252,8 @@ public class CustomArrayList<T> implements Iterable<T> {
     @Override
     public String toString() {
         return new StringJoiner(", ", CustomArrayList.class.getSimpleName() + "[", "]")
-                .add("elements=" + Arrays.toString(Arrays.stream(elements).limit(elementsIndex).toArray()))
-                .add("elementsSize=" + elementsIndex)
-                .toString();
+                       .add("elements=" + Arrays.toString(Arrays.stream(elements).limit(elementsLength).toArray()))
+                       .add("elementsSize=" + elementsLength)
+                       .toString();
     }
 }
