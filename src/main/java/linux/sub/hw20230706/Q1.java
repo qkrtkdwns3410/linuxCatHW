@@ -1,6 +1,8 @@
 package linux.sub.hw20230706;
 
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * packageName    : linux.sub.hw20230706
@@ -15,11 +17,14 @@ import java.util.Optional;
  */
 public class Q1 {
     public static void main(String[] args) {
-    
+        Q1 q1 = new Q1();
+        System.out.println(Arrays.toString(q1.solution(50237)));
+        System.out.println(Arrays.toString(q1.solution(15000)));
     }
     
     public int[] solution(int money) {
-        int[] answers = new int[0];
+        Bank bank = new Bank(money);
+        int[] answers = bank.exchange();
         return answers;
     }
     
@@ -35,9 +40,15 @@ public class Q1 {
         
         public int[] exchange() {
             int[] results = new int[Money.values().length];
-            for (Money money : Money.values()) {
-            
+            List<Money> descWons = Money.getMoneyByWonDesc();
+            for (Money money : descWons) {
+                // null 위험 제로 `==` <- 주소비교 연산자로 비교 기본자료형은 실제 값을 자바에서 가지고 있다. 13 이면 그냥 13임.
+                // ENUM 스펙상 ZeroDiv 에러는 발생할수없음
+                int remainer = this.money / money.getWon();
+                this.money %= money.getWon();
+                results[money.getIndex()] = remainer;
             }
+            return results;
         }
         
         // 필요한가..?
@@ -62,6 +73,12 @@ public class Q1 {
         private final int index;
         
         Money(int won, int index) {
+            if (won < 1) {
+                throw new IllegalArgumentException("won은 양수만 가능합니다");
+            }
+            if (index < 0) {
+                throw new IllegalArgumentException("index 는 0혹은 양수만 가능합니다");
+            }
             this.won = won;
             this.index = index;
         }
@@ -70,14 +87,14 @@ public class Q1 {
             return this.won;
         }
         
-        public static int calculate(int won) {
-            for (Money money : Money.values()) {
-                // Objects.equals 를 사용하려고 생각이 들었으나, 기본자료형에는 null 이 없어서 불필요한 과정임
-                if (money.getWon() == won) {
-                
-                }
-            }
-            return Optional.empty();
+        public int getIndex() {
+            return this.index;
+        }
+        
+        public static List<Money> getMoneyByWonDesc() {
+            List<Money> descWons = Arrays.asList(Money.values());
+            descWons.sort(Comparator.comparingInt(Money::getWon).reversed());
+            return descWons;
         }
     }
 }
