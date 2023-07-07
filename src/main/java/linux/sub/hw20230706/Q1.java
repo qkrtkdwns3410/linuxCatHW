@@ -1,6 +1,7 @@
 package linux.sub.hw20230706;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class Q1 {
             }
             this.money = money;
         }
-        
+        //!의도는 있으나, 과연 enum 에서 Bank 클래스 위해 정렬을 수행하는 메서드를 짜서 반환하는 형식이 유효한가에 대한 의구심이 든다. -> 시나리오성이 있는가에 대ㅏ한 고민.
         public int[] exchange() {
             int[] results = new int[Money.values().length];
             List<Money> descWons = Money.getMoneyByWonDesc();
@@ -52,9 +53,9 @@ public class Q1 {
         }
         
         // 필요한가..?
-        public static Bank from(int money) {
+/*         public static Bank from(int money) {
             return new Bank(money);
-        }
+        } */
     }
     
     public enum Money {
