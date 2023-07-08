@@ -1,11 +1,10 @@
 package linux.sub.hw20230624;
 
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * packageName    : linux.sub.hw20230624
@@ -20,61 +19,45 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class Practice {
     public static void main(String[] args) {
-        try (
-                ServerSocket serverSocket = new ServerSocket(8080);
-        ) {
-            while (true) {
-                try (
-                        Socket socket = serverSocket.accept();
-                        InputStream is = new BufferedInputStream(socket.getInputStream(), 8192);
-                        OutputStream os = new BufferedOutputStream(socket.getOutputStream(), 8192);
-                        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
-                ) {
-                    OutputStream consoleOs = new BufferedOutputStream(System.out, 8192);
-                    byte[] bytes = new byte[1024];
-                    byte lastByte = -1;
-                    byte secondLastByte = -1;
-                    byte thirdLastByte = -1;
-                    boolean isSequenceEnter = false;
-                    while (true) {
-                        int len = is.read(bytes);
-                        for (byte aByte : bytes) {
-                            if (aByte == 10 && lastByte == 13 && secondLastByte == 10 && thirdLastByte == 13) {
-                                isSequenceEnter = true;
-                                break;
-                            }
-                            thirdLastByte = secondLastByte;
-                            secondLastByte = lastByte;
-                            lastByte = aByte;
-                        }
-                        consoleOs.write(bytes, 0, len);
-                        consoleOs.flush();
-                        if (isSequenceEnter) {
-                            String jsonData = "{\"code\":\"value1\",\"status\":\"200\"}";
-                            bw.write("HTTP/1.1 200 OK");
-                            bw.newLine();
-                            bw.write("Content-Type: application/json");
-                            bw.newLine();
-                            bw.write("Content-Length: " + jsonData.getBytes(UTF_8).length);
-                            bw.newLine();
-                            bw.newLine();
-                            bw.write(jsonData);
-                            bw.flush();
-                            break;
-                        }
-                        if (len == -1) {
-                            break;
-                        }
-                        
-                    }
-                    consoleOs.flush();
-                    bw.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        List<Person> persons = new ArrayList<>(List.of(new Person("박상준", 30), new Person("김상준", 30), new Person("이상준", 18), new Person("cali", 29), new Person("Bali", 1)));
+        Collections.sort(persons, new AgeDescComparator());
+        System.out.println("persons = " + persons);
+    }
+    
+    public static class AgeDescComparator implements Comparator<Person> {
+        @Override
+        public int compare(Person o1, Person o2) {
+            if (o1 == null && o2 == null) {
+                return 0;
+            } else if (o1 == null) {
+                return 1;
+            } else if (o2 == null) {
+                return -1;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            return (o1.age - o2.age) * -1;
+        }
+    }
+    
+    public static class Person {
+        private final static IllegalArgumentException NULL_ARGUMENT_EXCEPTION = new IllegalArgumentException("NULL 값은 허용되지 않습니다.");
+        private String name;
+        private int age;
+        
+        public Person(String name, int age) {
+            if (age < 0) {
+                String ageErrorMessage = MessageFormat.format("age : {0} 은 0보다 작을 수 없습니다.", age);
+                throw new IllegalArgumentException(ageErrorMessage);
+            }
+            this.name = name;
+            this.age = age;
+        }
+        
+        @Override
+        public String toString() {
+            return "Person{" +
+                           "name='" + name + '\'' +
+                           ", age=" + age +
+                           '}';
         }
     }
 }
