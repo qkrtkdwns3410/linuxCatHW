@@ -20,7 +20,7 @@ public class Q2 {
         System.out.println(q2.solution(
                 new int[][]{{10, 0, 30, 5}, {0, 30, 20, 50}, {30, 30, 40, 40}},
                 new int[][]{{15, 15, 25, 25}, {40, 10, 50, 20}},
-                new int[]{10, 10, 30, 30}
+                new int[]{24, 15, 40, 25}
         ));
     }
     
@@ -34,6 +34,7 @@ public class Q2 {
                 return false;
             }
         }
+        // System.out.println("=================================");
         for (Parcel parcelWell : parcelWells) {
             boolean isParcelWellOverlap = wantedPoint.isOverlap(parcelWell);
             if (isParcelWellOverlap) {
@@ -61,14 +62,11 @@ public class Q2 {
             if (other == null) {
                 throw NULL_ARGUMENTATION_ERROR;
             }
-            boolean isXinMyParcel = ((this.bottomLeft.x < other.bottomLeft.x && other.bottomLeft.x < this.topRight.x) ||
-                                             (this.bottomLeft.x < other.topRight.x && other.topRight.x < this.topRight.x));
-            boolean isYinMyParcel = ((this.bottomLeft.y < other.bottomLeft.y && other.bottomLeft.y < this.topRight.y) ||
-                                             (this.bottomLeft.y < other.topRight.y && other.topRight.y < this.topRight.y));
-            if (isXinMyParcel && isYinMyParcel) {
-                return true;
-            }
-            return false;
+            // System.out.println("this = " + this);
+            // System.out.println("other = " + other);
+            boolean isXOverlap = !(this.topRight.x <= other.bottomLeft.x || this.bottomLeft.x >= other.topRight.x);
+            boolean isYOverlap =! (this.topRight.y <= other.bottomLeft.y || this.bottomLeft.y >= other.topRight.y);
+            return isXOverlap && isYOverlap;
         }
         
         
@@ -135,5 +133,12 @@ public class Q2 {
             this.y = y;
         }
         
+        @Override
+        public String toString() {
+            return "Point{" +
+                           "x=" + x +
+                           ", y=" + y +
+                           '}';
+        }
     }
 }
