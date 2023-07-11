@@ -17,7 +17,7 @@ import java.util.Arrays;
 public class Q3 {
     public static void main(String[] args) {
         Q3 q3 = new Q3();
-        System.out.println(q3.solution("I love you"));
+        System.out.println(q3.solution("한글"));
         System.out.println(q3.solution("kill nine process"));
         System.out.println(q3.solution("vandal is immutable"));
         System.out.println(q3.solution("cks is god"));
@@ -25,12 +25,14 @@ public class Q3 {
     
     public String solution(String word) {
         FROG oldFrog = FROG.from(word);
+        System.out.println("oldFrog = " + oldFrog);
         FROG newFrog = oldFrog.convertAlpahbet();
+        System.out.println("newFrog = " + newFrog);
         return newFrog.getWord();
     }
     
     public static class FROG {
-        private final IllegalArgumentException NULL_ARGUMENT_ERROR = new IllegalArgumentException("NULL값은 허용되지 않습니다");
+        private static final IllegalArgumentException NULL_ARGUMENT_ERROR = new IllegalArgumentException("NULL값은 허용되지 않습니다");
         private final char[] words;
         
         public FROG(char[] words) {
@@ -49,17 +51,16 @@ public class Q3 {
             int upperAsciiCriterion = (int) 'A' + (int) 'Z';
             int lowerAsciiCritertion = (int) 'a' + (int) 'z';
             char[] newChars = new char[words.length];
-            
-            for (int index = 0; index < newChars.length; index++) {
+            for (int index = 0; index < words.length; index++) {
                 char word = words[index];
-                if (!Character.isAlphabetic(word)) {
-                    newChars[index] = words[index];
+                if (isNotAlphabet(word)) {
+                    newChars[index] = word;
                     continue;
                 }
-                if (Character.isUpperCase(words[index])) {
-                    newChars[index] = (char) (upperAsciiCriterion - (int) words[index]);
-                } else if (Character.isLowerCase(words[index])) {
-                    newChars[index] = (char) (lowerAsciiCritertion - (int) words[index]);
+                if (Character.isUpperCase(word)) {
+                    newChars[index] = (char) (upperAsciiCriterion - (int) word);
+                } else if (Character.isLowerCase(word)) {
+                    newChars[index] = (char) (lowerAsciiCritertion - (int) word);
                 }
             }
             return new FROG(newChars);
@@ -75,6 +76,10 @@ public class Q3 {
         
         public static FROG from(String words) {
             return new FROG(words.toCharArray());
+        }
+        
+        private boolean isNotAlphabet(char letter) {
+            return !(65 <= (int) letter && (int) letter <= 122);
         }
         
         @Override
