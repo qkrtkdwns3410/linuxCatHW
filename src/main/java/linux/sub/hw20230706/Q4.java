@@ -123,7 +123,7 @@ public class Q4 {
         }
     }
     
-    public static class Score implements Comparable<Score> {
+    public static class Score {
         private static final IllegalArgumentException NULL_ARGUMENT_EXCEPTION = new IllegalArgumentException("Null 값은 허용되지 않습니다");
         private final int value;
         
@@ -143,14 +143,6 @@ public class Q4 {
                 return new Score(this.value);
             }
             return new Score(other.value);
-        }
-        
-        @Override
-        public int compareTo(Score o) {
-            if (o == null) {
-                throw NULL_ARGUMENT_EXCEPTION;
-            }
-            return this.value - o.value;
         }
         
         @Override
